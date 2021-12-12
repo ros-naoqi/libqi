@@ -37,7 +37,7 @@ namespace qi { namespace sock {
 
     io_service_t& get_io_service()
     {
-      return socket.get_io_service();
+      return GET_IO_SERVICE(socket);
     }
 
     void set_verify_mode(decltype(N::sslVerifyNone()) x)

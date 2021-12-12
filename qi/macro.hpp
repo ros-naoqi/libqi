@@ -28,6 +28,7 @@
 #include <ka/macro.hpp>
 #include <boost/predef/compiler.h>
 #include <boost/config.hpp>
+#include <boost/asio.hpp>
 
 /**
  * \def QI_API_DEPRECATED
@@ -357,6 +358,23 @@ namespace qi {
 #endif
 #ifndef QI_FALLTHROUGH
 #  define QI_FALLTHROUGH ((void)0)
+#endif
+
+/**
+ * @brief Depending on the Boost version, call get_io_service() or
+ * get_executor().context()
+ * 
+ */
+#if BOOST_VERSION >= 107000
+#define GET_IO_SERVICE(s) ((boost::asio::io_context&)(s).get_executor().context())
+#else
+#define GET_IO_SERVICE(s) ((s).get_io_service())
+#endif
+
+#if BOOST_VERSION >= 107000
+#define PTR_GET_IO_SERVICE(s) ((boost::asio::io_context&)(s)->get_executor().context())
+#else
+#define PTR_GET_IO_SERVICE(s) ((s)->get_io_service())
 #endif
 
 #endif  // _QI_MACRO_HPP_
