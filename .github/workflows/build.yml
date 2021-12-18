@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-    branches: [ros, noetic-devel, melodic-devel, kinetic-devel]
+    branches: [ros]
   pull_request:
-    branches: [ros, noetic-devel, melodic-devel, kinetic-devel]
+    branches: [noetic-devel, melodic-devel, kinetic-devel]
 
   workflow_dispatch: # allow manually starting this workflow
 
