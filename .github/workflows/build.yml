@@ -1,0 +1,105 @@
+name: build
+
+on:
+  push:
+    branches: [ros]
+  pull_request:
+    branches: [ros]
+
+  workflow_dispatch: # allow manually starting this workflow
+
+jobs:
+  matrix_preparation:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix-combinations }}
+    steps:
+    - name: Define matrix
+      id: set-matrix
+      run: |
+        NOETIC_PARAMS_COMBINATIONS='
+            {"ROS_DISTRO": "noetic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "focal", "ALLOW_FAIL": false},
+        '
+        MELODIC_PARAMS_COMBINATIONS='
+            {"ROS_DISTRO": "melodic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "bionic", "ALLOW_FAIL": false},
+            {"ROS_DISTRO": "melodic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "stretch", "ALLOW_FAIL": true},
+        '
+        KINETIC_PARAMS_COMBINATIONS='
+            {"ROS_DISTRO": "kinetic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "xenial", "ALLOW_FAIL": true},
+        '
+        echo ::set-output name=matrix-combinations::{\"noetic\":[$NOETIC_PARAMS_COMBINATIONS], \"melodic\":[$MELODIC_PARAMS_COMBINATIONS], \"kinetic\":[$KINETIC_PARAMS_COMBINATIONS]}
+
+  noetic_ci:
+    needs: matrix_preparation
+    if: github.ref == 'refs/heads/noetic-devel' || github.ref == 'refs/heads/ros'
+    name: ROS ${{ matrix.ROS_DISTRO }} (${{ matrix.OS_CODE_NAME }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.matrix_preparation.outputs.matrix.noetic)}}
+    continue-on-error: ${{ matrix.ALLOW_FAIL }}
+    env:
+      CCACHE_DIR: "${{ github.workspace }}/.ccache"
+    steps:
+      - name: Check out libqi repo
+        uses: actions/checkout@v2
+      - name: Fetch/store directory used by ccache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-${{ matrix.ROS_DISTRO }}-${{ matrix.ROS_REPO }}-${{github.run_id}}
+          restore-keys: |
+            ccache-${{ matrix.ROS_DISTRO }}-${{ matrix.ROS_REPO }}-
+      - name: Run industrial CI
+        uses: 'ros-industrial/industrial_ci@master'
+        env: ${{ matrix }}
+  
+  # melodic_ci:
+  #   needs: matrix_preparation
+  #   if: github.ref == 'refs/heads/melodic-devel' || github.ref == 'refs/heads/ros'
+  #   name: ROS ${{ matrix.melodic.ROS_DISTRO }} (${{ matrix.melodic.OS_CODE_NAME }})
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix: ${{fromJson(needs.matrix_preparation.outputs.matrix)}}
+  #   continue-on-error: ${{ matrix.melodic.ALLOW_FAIL }}
+  #   env:
+  #     CCACHE_DIR: "${{ github.workspace }}/.ccache"
+  #   steps:
+  #     - name: Check out libqi repo
+  #       uses: actions/checkout@v2
+  #     - name: Fetch/store directory used by ccache
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ${{ env.CCACHE_DIR }}
+  #         key: ccache-${{ matrix.melodic.ROS_DISTRO }}-${{ matrix.melodic.ROS_REPO }}-${{github.run_id}}
+  #         restore-keys: |
+  #           ccache-${{ matrix.melodic.ROS_DISTRO }}-${{ matrix.melodic.ROS_REPO }}-
+  #     - name: Run industrial CI
+  #       uses: 'ros-industrial/industrial_ci@master'
+  #       env: ${{ matrix.melodic }}
+  
+  # kinetic_ci:
+  #   needs: matrix_preparation
+  #   if: github.ref == 'refs/heads/kinetic-devel' || github.ref == 'refs/heads/ros'
+  #   name: ROS ${{ matrix.kinetic.ROS_DISTRO }} (${{ matrix.kinetic.OS_CODE_NAME }})
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix: ${{fromJson(needs.matrix_preparation.outputs.matrix)}}
+  #   continue-on-error: ${{ matrix.kinetic.ALLOW_FAIL }}
+  #   env:
+  #     CCACHE_DIR: "${{ github.workspace }}/.ccache"
+  #   steps:
+  #     - name: Check out libqi repo
+  #       uses: actions/checkout@v2
+  #     - name: Fetch/store directory used by ccache
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ${{ env.CCACHE_DIR }}
+  #         key: ccache-${{ matrix.kinetic.ROS_DISTRO }}-${{ matrix.kinetic.ROS_REPO }}-${{github.run_id}}
+  #         restore-keys: |
+  #           ccache-${{ matrix.kinetic.ROS_DISTRO }}-${{ matrix.kinetic.ROS_REPO }}-
+  #     - name: Run industrial CI
+  #       uses: 'ros-industrial/industrial_ci@master'
+  #       env: ${{ matrix.kinetic }}

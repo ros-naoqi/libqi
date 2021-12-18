@@ -1,0 +1,30 @@
+[
+    {
+        "runOnBranch": "ros",
+        "env": [
+            {"ROS_DISTRO": "noetic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "focal"},
+            {"ROS_DISTRO": "melodic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "bionic"},
+            {"ROS_DISTRO": "melodic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "stretch"},
+            {"ROS_DISTRO": "kinetic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "xenial"}
+        ]
+    },
+    {        
+        "runOnBranch": "noetic-devel",
+        "env": [
+            {"ROS_DISTRO": "noetic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "focal"}
+        ]
+    },
+    {
+        "runOnBranch": "melodic-devel",
+        "env": [
+            {"ROS_DISTRO": "melodic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "bionic"},
+            {"ROS_DISTRO": "melodic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "stretch"}
+        ]
+    },
+    {
+        "runOnBranch": "kinetic-devel",
+        "env": [
+            {"ROS_DISTRO": "kinetic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "xenial"}
+        ]
+    }
+]
