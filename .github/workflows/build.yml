@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [ros, noetic-devel, melodic-devel, kinetic-devel]
+    branches: [ros, ros2, galactic-devel, foxy-devel, noetic-devel, melodic-devel, kinetic-devel]
 
   workflow_dispatch: # allow manually starting this workflow
 
@@ -17,7 +17,17 @@ jobs:
       run: |
         branch_name=$(echo '${{ github.ref }}' | sed 's,refs/heads/,,g')
 
-        if [ "$branch_name" == "noetic-devel" ]
+        if [ "$branch_name" == "galactic-devel" ]
+        then
+          MATRIX_PARAMS_COMBINATIONS='
+            {"ROS_DISTRO": "galactic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "focal", "ALLOW_FAIL": false},
+          '
+        elif [ "$branch_name" == "foxy-devel" ]
+        then
+          MATRIX_PARAMS_COMBINATIONS='
+            {"ROS_DISTRO": "foxy", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "focal", "ALLOW_FAIL": false},
+          '
+        elif [ "$branch_name" == "noetic-devel" ]
         then
           MATRIX_PARAMS_COMBINATIONS='
             {"ROS_DISTRO": "noetic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "focal", "ALLOW_FAIL": false},
@@ -32,6 +42,12 @@ jobs:
         then
           MATRIX_PARAMS_COMBINATIONS='
             {"ROS_DISTRO": "kinetic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "xenial", "ALLOW_FAIL": true},
+          '
+        elif [ "$branch_name" == "ros2" ]
+        then
+          MATRIX_PARAMS_COMBINATIONS='
+            {"ROS_DISTRO": "galactic", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "focal", "ALLOW_FAIL": false},
+            {"ROS_DISTRO": "foxy", "ROS_REPO": "testing", "OS_NAME": "ubuntu", "OS_CODE_NAME": "focal", "ALLOW_FAIL": false},
           '
         elif [ "$branch_name" == "ros" ]
         then
