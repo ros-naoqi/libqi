@@ -2,15 +2,10 @@
 ## Use of this source code is governed by a BSD-style license that can be
 ## found in the COPYING file.
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.5)
 project(naoqi_libqi)
-find_package(catkin)
+find_package(ament_cmake REQUIRED)
 find_package(OpenSSL REQUIRED)
-
-catkin_package(CFG_EXTRAS libqi-extras.cmake
-  INCLUDE_DIRS ./
-  LIBRARIES qi
-)
 
 include(CheckSymbolExists)
 check_symbol_exists(_SC_HOST_NAME_MAX "unistd.h" HAVE_SC_HOST_NAME_MAX)
@@ -381,16 +376,16 @@ set(KA_H
   ka/utility.hpp
 )
 
-configure_file(qi/config.hpp.in ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/qi/config.hpp)
-include_directories(${CATKIN_DEVEL_PREFIX}/include)
+configure_file(qi/config.hpp.in ${CMAKE_INSTALL_PREFIX}/include/qi/config.hpp)
+include_directories(${CMAKE_INSTALL_PREFIX}/include)
 
 if(WITH_BOOST_LOCALE)
   list(APPEND QI_H qi/translator.hpp)
   list(APPEND QI_C src/translator.cpp)
 endif()
 
-install(DIRECTORY qi ka DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION})
-install(FILES ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/qi/config.hpp DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}/qi)
+install(DIRECTORY qi ka DESTINATION include)
+install(FILES ${CMAKE_INSTALL_PREFIX}/include/qi/config.hpp DESTINATION include/qi)
 
 if (WIN32)
   list(APPEND QI_C
@@ -429,7 +424,6 @@ endif()
 
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
-include(qimodule-config.cmake)
 
 add_library(qi SHARED
   ${QI_H}     ${QI_C}
@@ -464,5 +458,10 @@ if(WIN32)
   qi_use_lib(qi WSOCK IPHLPAPI PSAPI WSA) #Really?
 endif()
 
-install(TARGETS qi DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
-install(FILES package.xml DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(TARGETS qi DESTINATION lib)
+install(FILES package.xml DESTINATION share/${PROJECT_NAME})
+
+ament_export_include_directories(include)
+ament_export_libraries(qi)
+# ament_package(CONFIG_EXTRAS libqi-extras.cmake.em)
+ament_package()

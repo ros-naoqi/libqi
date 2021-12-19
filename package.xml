@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="3">
   <name>naoqi_libqi</name>
   <version>2.9.7</version>
   <description>Aldebaran's libqi: a core library for NAOqiOS development</description>
@@ -13,11 +13,13 @@
 
   <author>Aldebaran</author>
 
-  <build_depend>boost</build_depend>
-  <build_depend>libssl-dev</build_depend>
+  <depend>boost</depend>
+  <depend>libssl-dev</depend>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <run_depend>boost</run_depend>
-  <run_depend>libssl-dev</run_depend>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
 </package>
