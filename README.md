@@ -7,7 +7,7 @@ cross-language interoperability, OS abstractions, logging facilities,
 asynchronous task management, dynamic module loading.
 
 ## Compilation
-To compile __naoqi_libqi__, clone this repository in a ROS workspace and use the `catkin_make` command.
+To compile __naoqi_libqi__, clone this repository in a ROS2 workspace and use the `colcon build` command.
 
 Please note that you should checkout the branch corresponding to your ROS distro (eg. `galactic-devel` for Galactic, `foxy-devel` for Foxy, etc...)
 
