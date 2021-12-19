@@ -429,7 +429,6 @@ endif()
 
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
-include(qimodule-config.cmake)
 
 add_library(qi SHARED
   ${QI_H}     ${QI_C}
