@@ -1,4 +1,4 @@
-# naoqi_libqi [![build](https://github.com/ros-naoqi/libqi/actions/workflows/build.yml/badge.svg?branch=ros)](https://github.com/ros-naoqi/libqi/actions/workflows/build.yml)
+# naoqi_libqi
 
 This fork is used to define the __naoqi_libqi__ ROS package, based on [__libqi__](https://github.com/aldebaran/libqi).
 
@@ -13,14 +13,11 @@ Please note that you should checkout the branch corresponding to your ROS distro
 
 ## Status 
 
-The project can currently be successfully built for `Noetic (focal)` and `Melodic (bionic)`. Please refer to the [build workflow](https://github.com/ros-naoqi/libqi/actions/workflows/build.yml) for more information
+The project can currently be successfully built for `Noetic (focal)` and `Melodic (bionic)`. Please refer to the [workflows](https://github.com/ros-naoqi/libqi/actions) for more information
 
-<!-- [melodic-stretch]: https://github.com/ros-naoqi/libqi/actions/workflows/build.yml/badge.svg?branch=ros -->
-
-
-<!-- | ROS Distribution  | Status             |
-|-------------------|--------------------|
-| Noetic            | ![noetic]          |
-| Melodic           | ![melodic]         |
-| Melodic (stretch) | ![melodic-stretch] |
-| Kinetic           | ![kinetic]         | -->
+| ROS Build Status  |
+|-------------------|
+| [![ros-noetic-focal](https://github.com/ros-naoqi/libqi/actions/workflows/noetic_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/noetic_focal.yml) |
+| [![ros-melodic-bionic](https://github.com/ros-naoqi/libqi/actions/workflows/melodic_bionic.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/melodic_bionic.yml) |
+| [![ros-melodic-stretch](https://github.com/ros-naoqi/libqi/actions/workflows/melodic_stretch.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/melodic_stretch.yml) |
+| [![ros-kinetic-xenial](https://github.com/ros-naoqi/libqi/actions/workflows/kinetic_xenial.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/kinetic_xenial.yml) |

@@ -5,6 +5,7 @@ on:
 
 jobs:
   ros_noetic_focal_ci:
+  name: ROS noetic (focal) CI
     uses: ./.github/workflows/ros.yml
     with:
       ROS_DISTRO: noetic
