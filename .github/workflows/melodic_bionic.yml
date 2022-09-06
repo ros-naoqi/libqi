@@ -5,7 +5,7 @@ on:
 
 jobs:
   ros_melodic_bionic_ci:
-    name: ROS melodic (bionic) CI
+    name: melodic (bionic)
     uses: ./.github/workflows/ros.yml
     with:
       ROS_DISTRO: melodic

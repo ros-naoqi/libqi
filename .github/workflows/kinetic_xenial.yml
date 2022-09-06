@@ -5,7 +5,7 @@ on:
 
 jobs:
   ros_kinetic_xenial_ci:
-    name: ROS kinetic (xenial) CI
+    name: kinetic (xenial)
     uses: ./.github/workflows/ros.yml
     with:
       ROS_DISTRO: kinetic

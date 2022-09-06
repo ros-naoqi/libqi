@@ -5,7 +5,7 @@ on:
 
 jobs:
   ros_melodic_stretch_ci:
-    name: ROS melodic (stretch) CI
+    name: melodic (stretch)
     uses: ./.github/workflows/ros.yml
     with:
       ROS_DISTRO: melodic

@@ -21,7 +21,7 @@ on:
 
 jobs:
   ros_ci:
-    name: ROS ${{ inputs.ROS_DISTRO }} (${{ inputs.OS_CODE_NAME }}) CI
+    name: ROS
     runs-on: ubuntu-latest
     continue-on-error: ${{ inputs.ALLOW_FAIL }}
     env:
