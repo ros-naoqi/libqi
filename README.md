@@ -13,9 +13,22 @@ Please note that you should checkout the branch corresponding to your ROS distro
 
 ## Status 
 
-The project can currently be successfully built for `Galactic (focal)` and `Foxy (focal)`. Please refer to the [build workflow](https://github.com/ros-naoqi/libqi/actions) for more information
+The project can currently be successfully built for `Galactic (focal)` and `Foxy (focal)` from source. Please refer to the [build workflow](https://github.com/ros-naoqi/libqi/actions) for more information. The package binary status column details wether the package has been released for a specific distro.
 
-| ROS Build Status  |
-|-------------------|
-| [![ros2-galactic-focal](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml) |
-| [![ros2-foxy-focal](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml) |
+
+ROS distro | Package Binary Status | Source Build Status
+|-------------------|-------------------|-------------------|
+Humble | ![not_found](https://img.shields.io/badge/build-not%20found-inactive) | ![not_found](https://img.shields.io/badge/build-not%20found-inactive)
+Galactic | ![not_found](https://img.shields.io/badge/build-not%20found-inactive) | [![ros2-galactic-focal](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml)
+Foxy | ![not_found](https://img.shields.io/badge/build-not%20found-inactive) | [![ros2-foxy-focal](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml)
+
+
+<!-- Futur ROS2 badges when released:
+Humble
+[![Build Status](https://build.ros2.org/job/Hbin_uJ64__naoqi_libqi__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Hbin_uJ64__naoqi_libqi__ubuntu_focal_amd64__binary/)
+
+Galactic
+[![Build Status](https://build.ros2.org/job/Gbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Gbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/)
+
+Foxy
+[![Build Status](https://build.ros2.org/job/Fbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Fbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/) -->
