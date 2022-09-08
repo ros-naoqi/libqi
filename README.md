@@ -16,11 +16,11 @@ Please note that you should checkout the branch corresponding to your ROS distro
 The project can currently be successfully built for `Galactic (focal)` and `Foxy (focal)` from source. Please refer to the [build workflow](https://github.com/ros-naoqi/libqi/actions) for more information. The package binary status column details wether the package has been released for a specific distro.
 
 
-ROS distro | Package Binary Status | Source Build Status
-|-------------------|-------------------|-------------------|
-Humble | ![not_found](https://img.shields.io/badge/build-not%20found-inactive) | ![not_found](https://img.shields.io/badge/build-not%20found-inactive)
-Galactic | ![not_found](https://img.shields.io/badge/build-not%20found-inactive) | [![ros2-galactic-focal](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml)
-Foxy | ![not_found](https://img.shields.io/badge/build-not%20found-inactive) | [![ros2-foxy-focal](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml)
+ROS Distro | Binary Status | Source Status | Github Build
+|-------------------|-------------------|-------------------|-------------------|
+Humble | | | [![ros2-humble-jammy](https://github.com/ros-naoqi/libqi/actions/workflows/humble_jammy.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/humble_jammy.yml)
+Galactic | | | [![ros2-galactic-focal](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml)
+Foxy | | | [![ros2-foxy-focal](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml)
 
 
 <!-- Futur ROS2 badges when released:
