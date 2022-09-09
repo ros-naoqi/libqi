@@ -19,16 +19,5 @@ The project can currently be successfully built for `Galactic (focal)` and `Foxy
 ROS Distro | Binary Status | Source Status | Github Build
 |-------------------|-------------------|-------------------|-------------------|
 Humble | | | [![ros2-humble-jammy](https://github.com/ros-naoqi/libqi/actions/workflows/humble_jammy.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/humble_jammy.yml)
-Galactic | | | [![ros2-galactic-focal](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml)
-Foxy | | | [![ros2-foxy-focal](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml)
-
-
-<!-- Futur ROS2 badges when released:
-Humble
-[![Build Status](https://build.ros2.org/job/Hbin_uJ64__naoqi_libqi__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Hbin_uJ64__naoqi_libqi__ubuntu_focal_amd64__binary/)
-
-Galactic
-[![Build Status](https://build.ros2.org/job/Gbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Gbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/)
-
-Foxy
-[![Build Status](https://build.ros2.org/job/Fbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Fbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/) -->
+Galactic | [![Build Status](https://build.ros2.org/job/Gbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Gbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/) | [![Build Status](https://build.ros2.org/job/Gsrc_uF__naoqi_libqi__ubuntu_focal__source/badge/icon)](https://build.ros2.org/job/Gsrc_uF__naoqi_libqi__ubuntu_focal__source/) | [![ros2-galactic-focal](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/galactic_focal.yml)
+Foxy | [![Build Status](https://build.ros2.org/job/Fbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/badge/icon)](https://build.ros2.org/job/Fbin_uF64__naoqi_libqi__ubuntu_focal_amd64__binary/) | [![Build Status](https://build.ros2.org/job/Fsrc_uF__naoqi_libqi__ubuntu_focal__source/badge/icon)](https://build.ros2.org/job/Fsrc_uF__naoqi_libqi__ubuntu_focal__source/) | [![ros2-foxy-focal](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml/badge.svg)](https://github.com/ros-naoqi/libqi/actions/workflows/foxy_focal.yml)
