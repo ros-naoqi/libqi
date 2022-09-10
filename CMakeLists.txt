@@ -32,6 +32,7 @@ endif()
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif()
 
 # Remove this line to use QT if usable
@@ -75,6 +76,7 @@ set(QI_H qi/detail/async.hxx
          qi/atomic.hpp
          qi/buffer.hpp
          qi/clock.hpp
+         qi/config.hpp
          qi/either.hpp
          qi/flags.hpp
          qi/future.hpp
@@ -376,7 +378,7 @@ set(KA_H
   ka/utility.hpp
 )
 
-configure_file(qi/config.hpp.in ${CMAKE_INSTALL_PREFIX}/include/qi/config.hpp)
+# configure_file(qi/config.hpp.in ${CMAKE_INSTALL_PREFIX}/include/qi/config.hpp)
 include_directories(${CMAKE_INSTALL_PREFIX}/include)
 
 if(WITH_BOOST_LOCALE)
@@ -385,7 +387,7 @@ if(WITH_BOOST_LOCALE)
 endif()
 
 install(DIRECTORY qi ka DESTINATION include)
-install(FILES ${CMAKE_INSTALL_PREFIX}/include/qi/config.hpp DESTINATION include/qi)
+# install(FILES ${CMAKE_INSTALL_PREFIX}/include/qi/config.hpp DESTINATION include/qi)
 
 if (WIN32)
   list(APPEND QI_C
