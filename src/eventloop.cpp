@@ -36,6 +36,8 @@
 
 qiLogCategory("qi.eventloop");
 
+namespace ph = boost::placeholders;
+
 namespace qi {
   /// Component responsible for maintaining a container of threads.
   ///
@@ -1015,7 +1017,7 @@ namespace qi {
     ctx->target = this;
     ctx->helper = helper;
     ctx->maxDelay = maxDelay;
-    ctx->promise = Promise<void>(boost::bind<void>(&monitor_cancel, _1, ctx));
+    ctx->promise = Promise<void>(boost::bind<void>(&monitor_cancel, ph::_1, ctx));
     ctx->isFired = false;
     ctx->ending = false;
     monitor_ping(ctx);

@@ -11,8 +11,9 @@ namespace qi
     Future<qi::AnyObject> fut = session->service(name);
     fut.connect(&AutoService::onServiceModified, this, fut);
 
-    _session->serviceRegistered.connect(&AutoService::onServiceAdded, this, _2);
-    _session->serviceUnregistered.connect(&AutoService::onServiceRemoved, this, _2);
+    namespace ph = boost::placeholders;
+    _session->serviceRegistered.connect(&AutoService::onServiceAdded, this, ph::_2);
+    _session->serviceUnregistered.connect(&AutoService::onServiceRemoved, this, ph::_2);
   }
 
   template <typename T>

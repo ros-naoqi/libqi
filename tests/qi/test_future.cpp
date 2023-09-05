@@ -23,6 +23,8 @@
 
 qiLogCategory("test");
 
+namespace ph = boost::placeholders;
+
 static const qi::MilliSeconds defaultWaitTimeout{500};
 
 SetValue::SetValue(std::atomic<int>& tgt)
@@ -182,7 +184,7 @@ TEST_F(FutureFixture, SimpleType) {
 
   qi::Future<int>  fut = pro.future();
 
-  fut.connect(boost::bind(&FutureFixtureI::onFutureFinished, tf, _1));
+  fut.connect(boost::bind(&FutureFixtureI::onFutureFinished, tf, ph::_1));
 
   EXPECT_EQ(0, gGlobalI);
   EXPECT_FALSE(fut.isFinished());
@@ -202,7 +204,7 @@ TEST_F(FutureFixture, ComplexType) {
 
   qi::Future<std::string>  fut = pro.future();
 
-  fut.connect(boost::bind(&FutureFixtureS::onFutureFinished, tf, _1));
+  fut.connect(boost::bind(&FutureFixtureS::onFutureFinished, tf, ph::_1));
 
   EXPECT_STREQ("", gGlobalS.c_str());
   EXPECT_FALSE(fut.isFinished());
@@ -280,7 +282,7 @@ TEST_F(FutureFixture, TestError) {
   qi::Promise<int> pro(qi::FutureCallbackType_Sync);
 
   qi::Future<int>  fut = pro.future();
-  fut.connect(boost::bind(&FutureFixtureI::onFutureFinished, tf, _1));
+  fut.connect(boost::bind(&FutureFixtureI::onFutureFinished, tf, ph::_1));
 
   EXPECT_STREQ("", gGlobalE.c_str());
   EXPECT_FALSE(fut.isFinished());
@@ -666,8 +668,8 @@ TEST(FutureTestThen, ThenR)
 KA_WARNING_PUSH()
 KA_WARNING_DISABLE(4996, deprecated-declarations) // ignore use of deprecated overloads.
   qi::Future<int> f = qi::async(&get42);
-  qi::Future<int> ff = f.thenR<int>(&assinc, _1, 42);
-  qi::Future<int> fff = ff.thenR<int>(&assinc, _1, 43);
+  qi::Future<int> ff = f.thenR<int>(&assinc, ph::_1, 42);
+  qi::Future<int> fff = ff.thenR<int>(&assinc, ph::_1, 43);
 KA_WARNING_POP()
 
   ASSERT_EQ(44, fff.value());
@@ -676,8 +678,8 @@ KA_WARNING_POP()
 TEST(FutureTestThen, Then)
 {
   qi::Future<int> f = qi::async(&get42);
-  qi::Future<int> ff = f.then(qi::bind(&assinc, _1, 42));
-  qi::Future<int> fff = ff.then(qi::bind(&assinc, _1, 43));
+  qi::Future<int> ff = f.then(qi::bind(&assinc, ph::_1, 42));
+  qi::Future<int> fff = ff.then(qi::bind(&assinc, ph::_1, 43));
 
   ASSERT_EQ(44, fff.value());
 }
@@ -712,7 +714,7 @@ TEST(FutureTestThen, AndThenR)
 KA_WARNING_PUSH()
 KA_WARNING_DISABLE(4996, deprecated-declarations) // ignore use of deprecated overloads.
   qi::Future<int> f = qi::async(&get42);
-  qi::Future<int> ff = f.andThenR<int>(boost::bind(&fail, _1));
+  qi::Future<int> ff = f.andThenR<int>(boost::bind(&fail, ph::_1));
   qi::Future<int> fff = ff.andThenR<int>(boost::bind(&call, std::ref(called)));
 KA_WARNING_POP()
 
@@ -727,7 +729,7 @@ TEST(FutureTestThen, AndThen)
 {
   bool called = false;
   qi::Future<int> f = qi::async(&get42);
-  qi::Future<int> ff = f.andThen(boost::bind(&fail, _1));
+  qi::Future<int> ff = f.andThen(boost::bind(&fail, ph::_1));
   qi::Future<int> fff = ff.andThen(boost::bind(&call, std::ref(called)));
 
   fff.wait();
@@ -761,7 +763,7 @@ TEST(FutureTestThen, AndThenRCancel)
   qi::Future<int> f = qi::Future<int>(42);
 KA_WARNING_PUSH()
 KA_WARNING_DISABLE(4996, deprecated-declarations) // ignore use of deprecated overloads.
-  qi::Future<int> ff = f.andThenR<int>(boost::bind(&block, _1, blockProm.future()));
+  qi::Future<int> ff = f.andThenR<int>(boost::bind(&block, ph::_1, blockProm.future()));
   qi::Future<int> fff = ff.andThenR<int>(boost::bind(&call, std::ref(called)));
 KA_WARNING_POP()
 
@@ -855,7 +857,7 @@ TEST(FutureTestUnwrap, UnwrapCancel)
 {
   bool canceled = false;
 
-  qi::Promise<qi::Future<int> > prom(boost::bind(setTrue<qi::Future<int> >, _1, std::ref(canceled)));
+  qi::Promise<qi::Future<int> > prom(boost::bind(setTrue<qi::Future<int> >, ph::_1, std::ref(canceled)));
   qi::Promise<int> prom2;
   qi::Future<int> future = prom.future().unwrap();
 
@@ -874,8 +876,8 @@ TEST(FutureTestUnwrap, UnwrapCancel2)
   bool canceled = false;
   bool canceled2 = false;
 
-  qi::Promise<qi::Future<int> > prom(boost::bind(setTrue<qi::Future<int> >, _1, std::ref(canceled)));
-  qi::Promise<int> prom2(boost::bind(setTrue<int>, _1, std::ref(canceled2)));
+  qi::Promise<qi::Future<int> > prom(boost::bind(setTrue<qi::Future<int> >, ph::_1, std::ref(canceled)));
+  qi::Promise<int> prom2(boost::bind(setTrue<int>, ph::_1, std::ref(canceled2)));
   qi::Future<int> future = prom.future().unwrap();
 
   ASSERT_TRUE(future.isRunning());
@@ -1063,7 +1065,7 @@ TEST(FutureBarrier, CompleteExample)
     call.setValue(0);
 
     // Bind something to do after everything is computed.
-    barrier.future().connect(boost::bind(&checkBarrier, end, _1));
+    barrier.future().connect(boost::bind(&checkBarrier, end, ph::_1));
   }
 
   // Wait for the end of the check.
@@ -1355,8 +1357,8 @@ TEST(FutureSrc, SrcFutureUnitFutureCompose)
   static_assert(Equal<decltype(src * unit), id_transfo_t>::value, "");
   static_assert(Equal<decltype(unit * src), id_transfo_t>::value, "");
   id_transfo_t _1;
-  ASSERT_EQ(src * unit, _1);
-  ASSERT_EQ(unit * src, _1);
+  ASSERT_EQ(src * unit, ph::_1);
+  ASSERT_EQ(unit * src, ph::_1);
 #endif
 }
 

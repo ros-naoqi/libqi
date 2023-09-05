@@ -18,6 +18,8 @@ KA_WARNING_DISABLE(4355, )
 
 qiLogCategory("qimessaging.remoteobject");
 
+namespace ph = boost::placeholders;
+
 // Helper for debug logs of the class. Can only be called from non static member functions of
 // `qi::RemoteObject`.
 #define QI_LOG_DEBUG_REMOTEOBJECT() \
@@ -128,7 +130,7 @@ namespace qi {
     qi::Future<qi::MetaObject> fut =
       _self.async<qi::MetaObject>("metaObject", 0U);
     fut.connect(trackWithFallback(&throwRemoteObjectDestroyedException,
-                                  boost::bind<void>(&RemoteObject::onMetaObject, this, _1, prom),
+                                  boost::bind<void>(&RemoteObject::onMetaObject, this, ph::_1, prom),
                                   weak_from_this()));
     return prom.future();
   }
@@ -500,7 +502,7 @@ namespace qi {
     }
 
     rsl.future.connect(trackWithFallback(&throwRemoteObjectDestroyedException,
-                                         boost::bind<void>(&onEventConnected, this, _1, prom, uid),
+                                         boost::bind<void>(&onEventConnected, this, ph::_1, prom, uid),
                                          weak_from_this()));
     return prom.future();
   }

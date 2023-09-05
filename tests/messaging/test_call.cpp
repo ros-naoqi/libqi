@@ -30,6 +30,8 @@
 
 qiLogCategory("test");
 
+namespace ph = boost::placeholders;
+
 static const qi::MilliSeconds usualTimeout{200};
 
 int getint()
@@ -232,7 +234,7 @@ TEST(TestCall, CallBufferInList)
   qi::DynamicObjectBuilder ob;
   qi::AnyValue val;
   ob.advertiseMethod("pingcopy",
-    boost::function<qi::AnyValue(qi::AnyValue)>(boost::bind(&pingCopy, _1, boost::ref(val))));
+    boost::function<qi::AnyValue(qi::AnyValue)>(boost::bind(&pingCopy, ph::_1, boost::ref(val))));
   qi::AnyObject obj(ob.object());
   p.server()->registerService("test", obj);
   qi::AnyObject proxy = p.client()->service("test").value();
@@ -690,7 +692,7 @@ void bindObjectEvent(qi::AnyObject ptr, const std::string& eventName,
   qi::Promise<int>& eventValue)
 {
   // Keep ptr alive
-  ptr.connect(eventName, boost::function<void(int)>(boost::bind(&onEvent, _1, boost::ref(eventValue),
+  ptr.connect(eventName, boost::function<void(int)>(boost::bind(&onEvent, ph::_1, boost::ref(eventValue),
     new qi::AnyObject(ptr))));
 }
 
@@ -713,7 +715,7 @@ void onMakeObjectCall(qi::AnyObject ptr, const std::string& fname, int arg,
   qiLogDebug() << "onMakeObjectCall";
   qi::Future<int> fut = ptr.async<int>(fname, arg);
   // We must keep ptr alive until the call returns
-  fut.connect(boost::bind(&bounceFuture, _1, result, ptr));
+  fut.connect(boost::bind(&bounceFuture, ph::_1, result, ptr));
 }
 
 TEST(TestCall, TestObjectPassing)
@@ -728,7 +730,7 @@ TEST(TestCall, TestObjectPassing)
 
   qi::DynamicObjectBuilder ob;
   ob.advertiseMethod("makeObjectCall", &makeObjectCall);
-  ob.advertiseMethod("bindObjectEvent", boost::function<void(qi::AnyObject, const std::string&)>(boost::bind(&bindObjectEvent, _1, _2, boost::ref(eventValue))));
+  ob.advertiseMethod("bindObjectEvent", boost::function<void(qi::AnyObject, const std::string&)>(boost::bind(&bindObjectEvent, ph::_1, ph::_2, boost::ref(eventValue))));
   qi::AnyObject obj(ob.object());
 
   qiLogInfo() << logPrefix << "Registering service 's' on server.";
@@ -809,7 +811,7 @@ TEST(TestCall, TestObjectPassingReverse)
   qi::Promise<int> value;
   // We connect a method client-side
   boost::function<void(qi::AnyObject, const std::string&, int)> makeObjectCallEvent =
-    boost::bind(&onMakeObjectCall, _1, _2, _3, value);
+    boost::bind(&onMakeObjectCall, ph::_1, ph::_2, ph::_3, value);
   proxy.connect("makeObjectCallEvent", makeObjectCallEvent).wait(usualTimeout);
   // And emit server-side, this is the reverse of a method call
   obj.post("makeObjectCallEvent", unregisteredObj, "add", 41);
@@ -1403,7 +1405,7 @@ TEST(TestObject, callAndDropPointer)
   TestSessionPair p;
   Session& s  = *p.server();
   qi::Atomic<int> checker;
-  Object<TestClass> svc(new TestClass, boost::bind(&inc_atomic_and_delete, _1, &checker));
+  Object<TestClass> svc(new TestClass, boost::bind(&inc_atomic_and_delete, ph::_1, &checker));
   const auto sid = s.registerService("test", svc).value();
   qi::GenericObject* go = svc.asGenericObject();
   svc.reset();
@@ -1421,7 +1423,7 @@ TEST(TestObject, asyncCallAndDropPointer)
   TestSessionPair p;
   Session& s  = *p.server();
   qi::Atomic<int> checker;
-  Object<TestClass> svc(new TestClass, boost::bind(&inc_atomic_and_delete, _1, &checker));
+  Object<TestClass> svc(new TestClass, boost::bind(&inc_atomic_and_delete, ph::_1, &checker));
   const auto sid = s.registerService("test", svc).value();
   qi::GenericObject* go = svc.asGenericObject();
   svc.reset();
@@ -1466,7 +1468,7 @@ TEST(TestObject, asyncCallAndDropPointerGeneric)
     builder.advertiseMethod("unregisterService", &to, &TestClass::unregisterService);
 
     svc = builder.object(
-      boost::bind(&inc_atomic_and_delete_go, _1, &checker));
+      boost::bind(&inc_atomic_and_delete_go, ph::_1, &checker));
   }
   // We check that the object is deleted after the call
   TestSessionPair p;

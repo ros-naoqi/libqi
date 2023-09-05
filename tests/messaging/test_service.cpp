@@ -23,6 +23,8 @@
 
 qiLogCategory("test");
 
+namespace ph = boost::placeholders;
+
 static const qi::MilliSeconds usualTimeout{200};
 
 static std::string reply(const std::string &msg)
@@ -273,7 +275,7 @@ TEST(QiService, GenericProperty)
   unsigned int propId = builder.advertiseProperty<int>("offset");
   qi::PropertyBase* prop;
   builder.advertiseMethod("ping",
-    (boost::function<int (int)>)boost::bind(&prop_ping, boost::ref(prop), _1));
+    (boost::function<int (int)>)boost::bind(&prop_ping, boost::ref(prop), ph::_1));
   qi::AnyObject obj = builder.object();
   prop = dobj->property(propId);
   prop->setValue(0);
@@ -290,7 +292,7 @@ TEST(QiService, GenericProperty)
 
   // test event
   qi::Atomic<int> hit;
-  boost::function<void(int)> incHit = boost::bind(&inc, &hit, _1);
+  boost::function<void(int)> incHit = boost::bind(&inc, &hit, ph::_1);
   qiLogVerbose() << "Connecting to signal";
   ASSERT_NE(qi::SignalBase::invalidSignalLink, prop->signal()->connect(incHit));
   ASSERT_NE(qi::SignalBase::invalidSignalLink, obj.connect("offset", incHit).value());

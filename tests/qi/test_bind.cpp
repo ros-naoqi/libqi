@@ -13,6 +13,8 @@ KA_WARNING_POP()
 
 qiLogCategory("test");
 
+namespace ph = boost::placeholders;
+
 int exchange(int& target, int value)
 {
   int old = target;
@@ -40,12 +42,12 @@ TEST(TestBind, Simple)
   int v = 0;
 KA_WARNING_PUSH()
 KA_WARNING_DISABLE(4996, deprecated-declarations) // ignore use of deprecated overloads
-  qi::bind<void(int)>(&exchange, std::ref(v), _1)(15);
+  qi::bind<void(int)>(&exchange, std::ref(v), ph::_1)(15);
   EXPECT_EQ(15, v);
   qi::bind<void(void)>(&exchange, std::ref(v), 16)();
 KA_WARNING_POP()
   EXPECT_EQ(16, v);
-  qi::bind(&exchange, std::ref(v), _1)(15);
+  qi::bind(&exchange, std::ref(v), ph::_1)(15);
   EXPECT_EQ(15, v);
   qi::bind(&exchange, std::ref(v), 16)();
   EXPECT_EQ(16, v);
@@ -55,11 +57,11 @@ TEST(TestBind, MemFun)
 {
   std::atomic<int> v{0};
   SetValue s1(v);
-  qi::bind(&SetValue::exchange, &s1, _1)(1);
+  qi::bind(&SetValue::exchange, &s1, ph::_1)(1);
   EXPECT_EQ(1, v);
   qi::bind(&SetValue::exchange, &s1, 2)();
   EXPECT_EQ(2, v);
-  qi::bind(&SetValue::exchange, boost::ref(s1), _1)(3);
+  qi::bind(&SetValue::exchange, boost::ref(s1), ph::_1)(3);
   EXPECT_EQ(3, v);
   qi::bind(&SetValue::exchange, boost::ref(s1), 4)();
   EXPECT_EQ(4, v);
@@ -69,7 +71,7 @@ TEST(TestBind, SharedPtr)
 {
   std::atomic<int> v{0};
   boost::shared_ptr<SetValue> s(new SetValue(v));
-  qi::bind(&SetValue::exchange, s, _1)(1);
+  qi::bind(&SetValue::exchange, s, ph::_1)(1);
   EXPECT_EQ(1, v);
   qi::bind(&SetValue::exchange, s, 2)();
   EXPECT_EQ(2, v);
@@ -85,7 +87,7 @@ TEST(TestBind, WeakPtr)
   std::atomic<int> v{0};
   boost::shared_ptr<SetValue> s(new SetValue(v));
   boost::weak_ptr<SetValue> w(s);
-  qi::bind(&SetValue::exchange, w, _1)(1);
+  qi::bind(&SetValue::exchange, w, ph::_1)(1);
   EXPECT_EQ(1, v);
   qi::bind(&SetValue::exchange, w, 2)();
   EXPECT_EQ(2, v);
@@ -103,11 +105,11 @@ TEST(TestBind, Trackable)
 KA_WARNING_PUSH()
 KA_WARNING_DISABLE(4996, deprecated-declarations) // ignore use of deprecated overloads
     SetValue2 s1(v);
-    qi::bind<void(int)>(&SetValue2::exchange, &s1, _1)(1);
+    qi::bind<void(int)>(&SetValue2::exchange, &s1, ph::_1)(1);
     EXPECT_EQ(1, v);
     qi::bind<void(void)>(&SetValue2::exchange, &s1, 2)();
     EXPECT_EQ(2, v);
-    qi::bind<void(int)>(&SetValue2::exchange, boost::ref(s1), _1)(3);
+    qi::bind<void(int)>(&SetValue2::exchange, boost::ref(s1), ph::_1)(3);
     EXPECT_EQ(3, v);
     qi::bind<void(void)>(&SetValue2::exchange, boost::ref(s1), 4)();
     EXPECT_EQ(4, v);
@@ -116,11 +118,11 @@ KA_WARNING_POP()
   v = 0;
   {
     SetValue2 s1(v);
-    qi::bind(&SetValue2::exchange, &s1, _1)(1);
+    qi::bind(&SetValue2::exchange, &s1, ph::_1)(1);
     EXPECT_EQ(1, v);
     qi::bind(&SetValue2::exchange, &s1, 2)();
     EXPECT_EQ(2, v);
-    qi::bind(&SetValue2::exchange, boost::ref(s1), _1)(3);
+    qi::bind(&SetValue2::exchange, boost::ref(s1), ph::_1)(3);
     EXPECT_EQ(3, v);
     qi::bind(&SetValue2::exchange, boost::ref(s1), 4)();
     EXPECT_EQ(4, v);

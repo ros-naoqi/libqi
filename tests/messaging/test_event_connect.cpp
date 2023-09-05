@@ -12,6 +12,8 @@
 #include <thread>
 #include <chrono>
 
+namespace ph = boost::placeholders;
+
 static qi::Atomic<int> lastPayload;
 static qi::Atomic<int> lastPayload2;
 static qi::Atomic<int> completed;
@@ -37,8 +39,8 @@ void testDelete(bool afirst, bool disconnectFirst, qi::Promise<void> end)
   {
     qi::DynamicObjectBuilder oba, obb;
     fireId = oba.advertiseSignal<int>("fire");
-    onFireId = obb.advertiseMethod("onFire", boost::function<void(int)>(boost::bind<void>(&onFire, _1, boost::ref(p0))));
-    onFireId2 = obb.advertiseMethod("onFire2", boost::function<void(int)>(boost::bind<void>(&onFire2, _1, boost::ref(p1))));
+    onFireId = obb.advertiseMethod("onFire", boost::function<void(int)>(boost::bind<void>(&onFire, ph::_1, boost::ref(p0))));
+    onFireId2 = obb.advertiseMethod("onFire2", boost::function<void(int)>(boost::bind<void>(&onFire2, ph::_1, boost::ref(p1))));
     a = new qi::AnyObject(oba.object());
     b = new qi::AnyObject(obb.object());
   }
