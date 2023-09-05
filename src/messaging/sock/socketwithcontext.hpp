@@ -3,8 +3,15 @@
 #define _QI_SOCK_SOCKETWITHCONTEXT_HPP
 #include <ka/src.hpp>
 #include <ka/mutablestore.hpp>
+#include <boost/asio/io_context.hpp>
 #include "traits.hpp"
 #include "sslcontextptr.hpp"
+
+#if BOOST_VERSION >= 107000
+#define GET_IO_SERVICE(s) ((boost::asio::io_context&)(s).get_executor().context())
+#else
+#define GET_IO_SERVICE(s) ((s).get_io_service())
+#endif
 
 namespace qi { namespace sock {
 
@@ -19,6 +26,7 @@ namespace qi { namespace sock {
   {
     using socket_t = SslSocket<N>;
     using io_service_t = IoService<N>;
+    using io_context_t = IoContext<N>;
 
     SslContextPtr<N> context;
     socket_t socket;
@@ -28,6 +36,7 @@ namespace qi { namespace sock {
     using handshake_type = HandshakeSide<socket_t>;
     using lowest_layer_type = Lowest<socket_t>;
     using next_layer_type = typename socket_t::next_layer_type;
+    using executor_type = typename socket_t::executor_type;
 
     SocketWithContext(io_service_t& io, const SslContextPtr<N>& ctx)
       : context(ctx)
@@ -37,7 +46,12 @@ namespace qi { namespace sock {
 
     io_service_t& get_io_service()
     {
-      return socket.get_io_service();
+      return GET_IO_SERVICE(socket);
+    }
+
+    executor_type get_executor()
+    {
+      return socket.get_executor();
     }
 
     void set_verify_mode(decltype(N::sslVerifyNone()) x)

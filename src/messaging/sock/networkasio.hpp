@@ -26,7 +26,10 @@ namespace qi { namespace sock {
     using accept_option_reuse_address_type = boost::asio::ip::tcp::acceptor::reuse_address;
     using error_code_type = boost::system::error_code;
     using io_service_type = boost::asio::io_service;
+    using io_context_type = boost::asio::io_context;
     using const_buffer_type = boost::asio::const_buffer;
+    using executor_type = io_service_type::executor_type;
+
     static io_service_type& defaultIoService()
     {
       return *static_cast<io_service_type*>(getNetworkEventLoop()->nativeHandle());
