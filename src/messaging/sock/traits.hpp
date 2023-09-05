@@ -33,6 +33,9 @@ namespace qi { namespace sock {
   template<typename N>
   using IoService = typename N::io_service_type;
 
+  template<typename N>
+  using IoContext = typename N::io_context_type;
+
   // NetResolver-related traits
   template<typename R>
   using Query = typename R::query;

@@ -62,10 +62,7 @@ namespace qi { namespace sock {
       : _resolver{io}
     {
     }
-    IoService<N>& getIoService()
-    {
-      return _resolver.get_io_service();
-    }
+
   // Procedure:
     /// Network N,
     /// Procedure<void (ErrorCode<N>, Iterator<Resolver<N>>)> Proc,
@@ -156,10 +153,7 @@ namespace qi { namespace sock {
       : _resolve{io}
     {
     }
-    IoService<N>& getIoService()
-    {
-      return _resolve.getIoService();
-    }
+
   // Procedure:
     /// Procedure<void (ErrorCode<N>, OptionalEntry)> Proc,
     /// Procedure<void (Resolver<N>&)> Proc1

@@ -24,7 +24,7 @@
 #include <ka/typetraits.hpp>
 #include <ka/utility.hpp>
 
-namespace ph = boost::placeholders;
+namespace ph = std::placeholders;
 
 KA_WARNING_DISABLE(, unused-function)
 
@@ -507,7 +507,7 @@ TEST(FunctionalComposeT, Regular) {
 }
 
 TEST(FunctionalComposeT, Basic) {
-  using namespace ka; using namespace std::placeholders; using std::string; using std::vector;
+  using namespace ka; using std::string; using std::vector;
   auto even = [](int x) -> bool { return x % 2 == 0; };
   auto int_ = [](string const& x) -> int { return std::stoi(x); };
   auto evenInt = compose_t{}(even, int_);
@@ -519,7 +519,7 @@ TEST(FunctionalComposeT, Basic) {
 }
 
 TEST(FunctionalComposeT, Bind) {
-  using namespace ka; using namespace std::placeholders; using std::string; using std::vector;
+  using namespace ka; using std::string; using std::vector;
   auto even = [](int x) -> bool { return x % 2 == 0; };
   auto comp_even = std::bind(compose_t{}, even, ph::_1); // comp_even f = even ∘ f
 
