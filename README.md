@@ -11,7 +11,18 @@ To compile __naoqi_libqi__, clone this repository in a ROS2 workspace and use th
 
 Please note that you should checkout the branch corresponding to your ROS distro (eg. `galactic-devel` for Galactic, `foxy-devel` for Foxy, etc...)
 
-## Status 
+## Working from container
+
+You can work on this project from a dev container:
+
+```bash
+docker build -t ros2-naoqi-libqi --target dev_with_deps .
+docker run --volume=.:/home/user/ws/src/naoqi-libqi -it ros2-naoqi-libqi
+```
+
+Edit the [`Dockerfile`](./Dockerfile) to set the target distro you want to work on.
+
+## Status
 
 The project can currently be successfully built for `Galactic (focal)` and `Foxy (focal)` from source. Please refer to the [build workflow](https://github.com/ros-naoqi/libqi/actions) for more information. The package binary status column details wether the package has been released for a specific distro.
 
