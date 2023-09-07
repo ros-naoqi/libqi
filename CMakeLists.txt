@@ -35,27 +35,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif()
 
-# Remove this line to use QT if usable
-set(WITH_QT5_CORE OFF)
-
 if(WITH_BOOST_LOCALE)
   add_definitions(" -DWITH_BOOST_LOCALE ")
 endif()
 
-enable_testing()
 include(CMakeDependentOption)
-
-if (WITH_PROBES)
-  find_package(qiprobes)
-  qiprobes_create_probe(tp_qi
-    src/tp_qi.in.h
-    PROVIDER_NAME qi_qi)
-  qiprobes_instrument_files(tp_qi
-    src/eventloop.cpp)
-  set(_tp_qi "tp_qi")
-else()
-  set(_tp_qi "")
-endif()
 
 set(QI_H qi/detail/async.hxx
          qi/detail/clock.hxx
@@ -404,12 +388,12 @@ else()
     list(APPEND QI_C src/os_launch_posix.cpp)
   endif()
 endif()
- 
+
 #normalize BUILD_SHARED_LIBS, default ON
 if (NOT DEFINED BUILD_SHARED_LIBS)
   set(BUILD_SHARED_LIBS ON)
 endif()
- 
+
 # Set qi_STATIC_BUILD  used in config.hpp.in
 set(qi_STATIC_BUILD OFF)
 if (NOT BUILD_SHARED_LIBS) #lol
@@ -434,15 +418,17 @@ add_library(qi SHARED
   ${QI_SOCKET_H}
   ${KA_H})
 
-find_package(Boost QUIET COMPONENTS chrono filesystem program_options regex system thread random)
-target_link_libraries(qi ${Boost_LIBRARIES} OpenSSL::Crypto OpenSSL::SSL)
-
-if (WITH_QT5_CORE)
-  qi_use_lib(qi QT5_CORE)
-endif()
 if(WITH_BOOST_LOCALE)
-  qi_use_lib(qi BOOST_LOCALE)
+  set(BOOST_MAYBE_LOCALE locale)
 endif()
+
+find_package(
+  Boost
+  COMPONENTS
+  chrono filesystem program_options regex system thread random
+  ${BOOST_MAYBE_LOCALE}
+)
+target_link_libraries(qi ${Boost_LIBRARIES} OpenSSL::Crypto OpenSSL::SSL)
 
 if (UNIX)
   target_link_libraries(qi pthread)
@@ -457,11 +443,14 @@ if(UNIX AND NOT APPLE AND NOT ANDROID)
 endif()
 
 if(WIN32)
-  qi_use_lib(qi WSOCK IPHLPAPI PSAPI WSA) #Really?
+  target_link_libraries(qi WSOCK IPHLPAPI PSAPI WSA) #Really?
 endif()
 
 install(TARGETS qi DESTINATION lib)
 install(FILES package.xml DESTINATION share/${PROJECT_NAME})
+
+enable_testing()
+add_subdirectory("tests")
 
 ament_export_include_directories(include)
 ament_export_libraries(qi)
