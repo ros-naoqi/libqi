@@ -2,7 +2,7 @@ ARG ROS_DISTRO=iron
 FROM ros:${ROS_DISTRO} as dev
 ENV ROS_DISTRO=${ROS_DISTRO}
 
-RUN apt-get update && apt-get install gdb -y
+RUN apt-get update && apt-get install gdb libgmock-dev -y
 
 RUN useradd -m -s /bin/bash --user-group -G sudo --create-home --no-log-init user
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
