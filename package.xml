@@ -1,3 +1,27 @@
-<package name="qi-framework" version="1.8.7" target="" >
-    <license>BSD</license>
+<?xml version="1.0"?>
+<package format="3">
+  <name>naoqi_libqi</name>
+  <version>2.9.7</version>
+  <description>Aldebaran's libqi: a core library for NAOqiOS development</description>
+
+  <maintainer email="victor.paleologue@palaio.eu">Victor Paléologue</maintainer>
+  <maintainer email="mbusy@softbankrobotics.com">Maxime Busy</maintainer>
+  <maintainer email="surya.ambrose@gmail.com">Surya Ambrose</maintainer>
+  <license>BSD</license>
+
+  <url type="website">http://doc.aldebaran.com/libqi</url>
+  <url type="repository">https://github.com/aldebaran/libqi</url>
+
+  <author>Aldebaran</author>
+
+  <depend>boost</depend>
+  <depend>libssl-dev</depend>
+  <test_depend>libgmock-dev</test_depend>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
 </package>
