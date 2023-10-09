@@ -122,13 +122,14 @@ namespace qi
     // Procedure:
       result_type operator()(SignalLink link, bool enable) const
       {
+        namespace ph = boost::placeholders;
         auto self = *this;
         return resetBounceEventCallback(callSubs, enable, weakObject, signalName, link)
            // link changed, rebind ourselves if we're still alive
           .andThen(lifeSignal(
             // Copy self instead of using `this` to avoid lifetime issues.
             [self](SignalLink newLink) {
-              self.signal->setOnSubscribers(self.lifeSignal(boost::bind(self, newLink, _1)));
+              self.signal->setOnSubscribers(self.lifeSignal(boost::bind(self, newLink, ph::_1)));
             }));
       }
     };
@@ -171,16 +172,17 @@ namespace qi
       auto callSubs = lifeSignal(std::bind(&SignalBase::callSubscribers, std::ref(signal),
                                            std::placeholders::_1, MetaCallType_Auto));
 
+      namespace ph = boost::placeholders;
       signal.setOnSubscribers(lifeSignal(
         boost::bind(resetBounceEventCallbackOnSubscribersContinuous(signal, lifeSignal, callSubs,
                                                                     object, signalName),
-                    SignalBase::invalidSignalLink, _1)));
+                    SignalBase::invalidSignalLink, ph::_1)));
 
       // On signal trigger, just forward the trigger to the back-end. When the back-end gets
       // triggered, we get notified back, because we connect to the back-end by the 'bounce event'
       // callback, in which we can notify back our local subscribers.
       signal.setTriggerOverride(
-        boost::bind(&details_proxysignal::metaPostSignal, object, signalName, _1));
+        boost::bind(&details_proxysignal::metaPostSignal, object, signalName, ph::_1));
     }
 
     inline void tearDownProxy(SignalBase& sig)

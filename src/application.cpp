@@ -33,6 +33,7 @@
 qiLogCategory("qi.Application");
 
 namespace bfs = boost::filesystem;
+namespace ph = boost::placeholders;
 
 static std::string _sdkPath;
 static boost::program_options::options_description _options;
@@ -103,7 +104,7 @@ namespace qi {
       case 1:
         qiLogVerbose() << "Sending the stop command...";
         //register the signal again to call exit the next time if stop did not succeed
-        Application::atSignal(boost::bind<void>(&stop_handler, _1), signal_number);
+        Application::atSignal(boost::bind<void>(&stop_handler, ph::_1), signal_number);
         // Stop might immediately trigger application destruction, so it has
         // to go after atSignal.
         Application::stop();
@@ -312,12 +313,12 @@ namespace qi {
     // run is called, so we catch sigint/sigterm, the default
     // implementation call Application::stop that
     // will make this loop exit.
-    atSignal.emplace_back(boost::bind(stop_handler, _1), SIGTERM);
-    atSignal.emplace_back(boost::bind(stop_handler, _1), SIGINT);
+    atSignal.emplace_back(boost::bind(stop_handler, ph::_1), SIGTERM);
+    atSignal.emplace_back(boost::bind(stop_handler, ph::_1), SIGINT);
 
     for(const auto& func: atSignal)
       signalSets.emplace(signalSets.end(), *globalIoService, func.second)->async_wait(
-                  boost::bind(signal_handler, _1, _2, std::move(func.first)));
+                  boost::bind(signal_handler, ph::_1, ph::_2, std::move(func.first)));
 
     // Call every function registered as "atRun"
     for(auto& function: lazyGet(globalAtRun))

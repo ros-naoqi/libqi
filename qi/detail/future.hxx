@@ -437,11 +437,12 @@ namespace detail {
       {
         Future<Future<T> >* self = static_cast<Future<Future<T> >*>(this);
 
-        Promise<T> promise(boost::bind(&AddUnwrap<Future<T> >::_cancel, _1,
+        namespace ph = boost::placeholders;
+        Promise<T> promise(boost::bind(&AddUnwrap<Future<T> >::_cancel, ph::_1,
               boost::weak_ptr<FutureBaseTyped<Future<T> > >(self->_p)));
 
         self->connect(
-            boost::bind(&AddUnwrap<Future<T> >::_forward, _1, promise),
+            boost::bind(&AddUnwrap<Future<T> >::_forward, ph::_1, promise),
             FutureCallbackType_Sync);
 
         return promise.future();
@@ -538,29 +539,32 @@ namespace detail {
   template<typename R>
   void adaptFutureUnwrap(Future<AnyReference>& f, Promise<R>& p)
   {
+    namespace ph = boost::placeholders;
     p.setup(boost::bind(&detail::futureCancelAdapter<AnyReference>,
           boost::weak_ptr<detail::FutureBaseTyped<AnyReference> >(f._p)));
     f.connect(boost::function<void(const qi::Future<AnyReference>&)>(
-          boost::bind(&detail::futureAdapter<R>, _1, p)));
+          boost::bind(&detail::futureAdapter<R>, ph::_1, p)));
   }
 
   template<typename FT, typename PT>
   void adaptFuture(const Future<FT>& f, Promise<PT>& p, AdaptFutureOption option)
   {
+    namespace ph = boost::placeholders;
     if (option == AdaptFutureOption_ForwardCancel)
       p.setup(boost::bind(&detail::futureCancelAdapter<FT>,
             boost::weak_ptr<detail::FutureBaseTyped<FT> >(f._p)));
-    const_cast<Future<FT>&>(f).connect(boost::bind(detail::futureAdapter<FT, PT, FutureValueConverter<FT, PT> >, _1, p,
+    const_cast<Future<FT>&>(f).connect(boost::bind(detail::futureAdapter<FT, PT, FutureValueConverter<FT, PT> >, ph::_1, p,
       FutureValueConverter<FT, PT>()));
   }
 
   template<typename FT, typename PT, typename CONV>
   void adaptFuture(const Future<FT>& f, Promise<PT>& p, CONV converter, AdaptFutureOption option)
   {
+    namespace ph = boost::placeholders;
     if (option == AdaptFutureOption_ForwardCancel)
       p.setup(boost::bind(&detail::futureCancelAdapter<FT>,
             boost::weak_ptr<detail::FutureBaseTyped<FT> >(f._p)));
-    const_cast<Future<FT>&>(f).connect(boost::bind(detail::futureAdapter<FT, PT, CONV>, _1, p, converter));
+    const_cast<Future<FT>&>(f).connect(boost::bind(detail::futureAdapter<FT, PT, CONV>, ph::_1, p, converter));
   }
 
   template <typename T>

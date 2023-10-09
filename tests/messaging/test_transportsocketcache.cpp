@@ -31,6 +31,8 @@
 
 qiLogCategory("TestTransportSocketCache");
 
+namespace ph = boost::placeholders;
+
 using namespace test;
 using namespace testing;
 
@@ -47,7 +49,7 @@ protected:
   TestTransportSocketCache()
   {
     cache_.init();
-    server_.newConnection.connect(&newConnection, _1);
+    server_.newConnection.connect(&newConnection, ph::_1);
   }
   ~TestTransportSocketCache()
   {

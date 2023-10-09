@@ -29,6 +29,8 @@
 
 qiLogCategory("test");
 
+namespace ph = boost::placeholders;
+
 const qi::MilliSeconds usualTimeout{ 200 };
 const std::chrono::milliseconds stdUsualTimeout{usualTimeout.count()};
 
@@ -385,7 +387,7 @@ TEST(TestStrand, AllFutureSignalPropertyPeriodicTaskAsyncTypeErasedDynamic)
     qi::DynamicObjectBuilder builder;
     builder.setThreadingModel(qi::ObjectThreadingModel_SingleThread);
     builder.advertiseMethod("f",
-        boost::function<void(int, qi::Promise<void>)>(boost::bind(&MyActor::f, obj, _1, _2)));
+        boost::function<void(int, qi::Promise<void>)>(boost::bind(&MyActor::f, obj, ph::_1, ph::_2)));
     builder.advertiseSignal("sig", &obj->sig);
     builder.advertiseProperty("prop", &obj->prop);
 
@@ -449,9 +451,9 @@ KA_WARNING_POP()
     for (int i = 0; i < 5; ++i)
       prom.future().then(qi::bind(&MyActor::f, obj.get(), TOTAL, finished));
     for (int i = 0; i < 50; ++i)
-      signal.connect(&MyActor::f, obj.get(), _1, finished);
+      signal.connect(&MyActor::f, obj.get(), ph::_1, finished);
     for (int i = 0; i < 50; ++i)
-      aobj.connect("sig", boost::function<void(int)>(obj->stranded(boost::bind(&MyActor::f, obj, _1, finished))));
+      aobj.connect("sig", boost::function<void(int)>(obj->stranded(boost::bind(&MyActor::f, obj, ph::_1, finished))));
 
     per.start();
     for (int i = 0; i < 25; ++i)

@@ -11,6 +11,8 @@
 
 qiLogCategory("qimessaging.servicedirectoryclient");
 
+namespace ph = boost::placeholders;
+
 namespace qi {
 
   ServiceDirectoryClient::StateData::StateData(StateData&& o)
@@ -105,8 +107,7 @@ namespace qi {
 
     Future<void> fut = futurize(); // if there was nothing asynchronous to do, return a future with
                                    // a value already set
-
-    using std::placeholders::_1;
+    namespace ph = std::placeholders;
     if (stateData.sdSocket)
     {
       static const auto logSocketSignalDisc = [](const char* prefix, Future<bool> discFut) {
@@ -120,11 +121,11 @@ namespace qi {
       stateData.sdSocket->disconnected
         .disconnectAsync(exchangeInvalidSignalLink(stateData.sdSocketDisconnectedSignalLink))
         .then(std::bind(logSocketSignalDisc,
-                        "Failed to disconnect Socket::disconnected: ", _1));
+                        "Failed to disconnect Socket::disconnected: ", ph::_1));
       stateData.sdSocket->socketEvent
         .disconnectAsync(exchangeInvalidSignalLink(stateData.sdSocketSocketEventSignalLink))
         .then(std::bind(logSocketSignalDisc,
-                        "Failed to disconnect Socket::socketEvent: ", _1));
+                        "Failed to disconnect Socket::socketEvent: ", ph::_1));
       fut = stateData.sdSocket->disconnect().async();
 
       if (sendSignalDisconnected)
@@ -138,10 +139,10 @@ namespace qi {
       };
 
       _object.disconnect(exchangeInvalidSignalLink(stateData.addSignalLink)).async()
-        .then(std::bind(logObjectSignalDisc, "Failed to disconnect SDC::serviceAdded: ", _1));
+        .then(std::bind(logObjectSignalDisc, "Failed to disconnect SDC::serviceAdded: ", ph::_1));
 
       _object.disconnect(exchangeInvalidSignalLink(stateData.removeSignalLink)).async()
-        .then(std::bind(logObjectSignalDisc, "Failed to disconnect SDC::serviceRemoved: ", _1));
+        .then(std::bind(logObjectSignalDisc, "Failed to disconnect SDC::serviceRemoved: ", ph::_1));
     }
 
     if (stateData.localSd)
@@ -173,16 +174,16 @@ namespace qi {
     qi::Future<SignalLink> fut1 = _object.connect(
         "serviceAdded",
         boost::function<void(unsigned int, const std::string&)>(
-          qi::bind(&ServiceDirectoryClient::onServiceAdded, this, _1, _2)));
+          qi::bind(&ServiceDirectoryClient::onServiceAdded, this, ph::_1, ph::_2)));
     qi::Future<SignalLink> fut2 = _object.connect(
         "serviceRemoved",
         boost::function<void(unsigned int, const std::string&)>(
-          qi::bind(&ServiceDirectoryClient::onServiceRemoved, this, _1, _2)));
+          qi::bind(&ServiceDirectoryClient::onServiceRemoved, this, ph::_1, ph::_2)));
 
     fut1.then(track(
-      boost::bind(&ServiceDirectoryClient::onSDEventConnected, this, _1, promise, true), this));
+      boost::bind(&ServiceDirectoryClient::onSDEventConnected, this, ph::_1, promise, true), this));
     fut2.then(track(
-      boost::bind(&ServiceDirectoryClient::onSDEventConnected, this, _1, promise, false), this));
+      boost::bind(&ServiceDirectoryClient::onSDEventConnected, this, ph::_1, promise, false), this));
   }
 
   namespace service_directory_client_private
@@ -247,7 +248,7 @@ namespace qi {
         service_directory_client_private::sendCapabilities(socket);
         qi::Future<void> future = _remoteObject->fetchMetaObject();
         future.connect(track(
-          boost::bind(&ServiceDirectoryClient::onMetaObjectFetched, this, socket, _1, prom), this));
+          boost::bind(&ServiceDirectoryClient::onMetaObjectFetched, this, socket, ph::_1, prom), this));
       }
       return;
     }
@@ -274,7 +275,7 @@ namespace qi {
           exchangeInvalidSignalLink(_stateData.sdSocketSocketEventSignalLink));
       qi::Future<void> future = _remoteObject->fetchMetaObject();
       future.connect(track(
-        boost::bind(&ServiceDirectoryClient::onMetaObjectFetched, this, socket, _1, prom), this));
+        boost::bind(&ServiceDirectoryClient::onMetaObjectFetched, this, socket, ph::_1, prom), this));
       return;
     }
 
@@ -385,11 +386,11 @@ namespace qi {
       _stateData.addSignalLink = _object.connect(
           "serviceAdded",
           boost::function<void(unsigned int, const std::string&)>(
-            qi::bind(&ServiceDirectoryClient::onServiceAdded, this, _1, _2))).value();
+            qi::bind(&ServiceDirectoryClient::onServiceAdded, this, ph::_1, ph::_2))).value();
       _stateData.removeSignalLink = _object.connect(
           "serviceRemoved",
           boost::function<void(unsigned int, const std::string&)>(
-            qi::bind(&ServiceDirectoryClient::onServiceRemoved, this, _1, _2))).value();
+            qi::bind(&ServiceDirectoryClient::onServiceRemoved, this, ph::_1, ph::_2))).value();
     }
 
     connected();

@@ -42,6 +42,9 @@ namespace std
 #endif
 
 qiLogCategory("test");
+
+namespace ph = boost::placeholders;
+
 static int gGlobalResult = 0;
 
 void vfun(const int &p0,const int &p1)   { gGlobalResult = p0 + p1; }
@@ -358,10 +361,10 @@ TEST(TestObject, Methods) {
   ob.advertiseMethod("vtest", &vfun);
   ob.advertiseMethod("objtest", &foo, &Foo::fun);
   ob.advertiseMethod("objvtest", &foo, &Foo::vfun);
-  ob.advertiseMethod("testBind", (boost::function<int(const int&)>)boost::bind(&fun, 21, _1));
-  ob.advertiseMethod("testBind2", (boost::function<int(int)>)boost::bind(&fun, 21, _1));
-  ob.advertiseMethod("testBindVal", (boost::function<int(const int&)>)boost::bind(&funVal, 21, _1));
-  ob.advertiseMethod("testBind2Val", (boost::function<int(int)>)boost::bind(&funVal, 21, _1));
+  ob.advertiseMethod("testBind", (boost::function<int(const int&)>)boost::bind(&fun, 21, ph::_1));
+  ob.advertiseMethod("testBind2", (boost::function<int(int)>)boost::bind(&fun, 21, ph::_1));
+  ob.advertiseMethod("testBindVal", (boost::function<int(const int&)>)boost::bind(&funVal, 21, ph::_1));
+  ob.advertiseMethod("testBind2Val", (boost::function<int(int)>)boost::bind(&funVal, 21, ph::_1));
   ob.advertiseMethod("ptrtest", &ptrfun);
   ob.advertiseMethod("reftest", &reffun);
   ob.advertiseMethod("valuetest", &valuefun);
@@ -594,7 +597,7 @@ TEST(TestObject, ObjectTypeBuilder)
   // otherwise some arguments are copied
   builder.setThreadingModel(qi::ObjectThreadingModel_MultiThread);
   builder.advertiseMethod("add", &Adder::add);
-  builder.advertiseMethod("addTwo", boost::function<int(Adder*, int, int)>(boost::bind(&Adder::addTwo, _2, _3)));
+  builder.advertiseMethod("addTwo", boost::function<int(Adder*, int, int)>(boost::bind(&Adder::addTwo, ph::_2, ph::_3)));
   builder.advertiseMethod("addAdderByRef", &Adder::addAdderByRef);
   builder.advertiseMethod("addAdderByConstRef", &Adder::addAdderByConstRef);
   builder.advertiseMethod("addAdderByPtr", &Adder::addAdderByPtr);
@@ -656,7 +659,7 @@ TEST(TestObject, ObjectTypeBuilderAsync)
   qi::ObjectTypeBuilder<MAdder> builder;
   builder.inherits<Adder>();
   builder.advertiseMethod("add", &Adder::add, qi::MetaCallType_Queued);
-  builder.advertiseMethod("addTwo", boost::function<int(Adder*, int, int)>(boost::bind(&Adder::addTwo, _2, _3)));
+  builder.advertiseMethod("addTwo", boost::function<int(Adder*, int, int)>(boost::bind(&Adder::addTwo, ph::_2, ph::_3)));
   builder.advertiseMethod("addAdderByRef", &Adder::addAdderByRef, qi::MetaCallType_Queued);
   builder.advertiseMethod("addAdderByConstRef", &Adder::addAdderByConstRef, qi::MetaCallType_Queued);
   builder.advertiseMethod("addAdderByPtr", &Adder::addAdderByPtr, qi::MetaCallType_Queued);
@@ -798,7 +801,7 @@ void forward(qi::Future<int> f, qi::Promise<void> p) {
 qi::Future<void> delaySetV(qi::MilliSeconds delay, int value, qi::Promise<int>& prom)
 {
   qi::Promise<void> p;
-  prom.future().connect(boost::bind<void>(&forward, _1, p));
+  prom.future().connect(boost::bind<void>(&forward, ph::_1, p));
   boost::thread(_delaySet, prom, delay, value);
   return p.future();
 }
@@ -808,7 +811,7 @@ TEST(TestObject, FutureVoid)
   qi::DynamicObjectBuilder gob;
   qi::Promise<int> prom;
   gob.advertiseMethod("delaySet", boost::function<qi::Future<void>(qi::MilliSeconds, int)>(
-                                      boost::bind(&delaySetV, _1, _2, boost::ref(prom))));
+                                      boost::bind(&delaySetV, ph::_1, ph::_2, boost::ref(prom))));
   qi::AnyObject obj = gob.object();
   qi::Future<void> f = obj.async<void>("delaySet", qi::MilliSeconds{ 500 }, 41);
   ASSERT_TRUE(!f.isFinished());
@@ -930,7 +933,7 @@ TEST(TestObject, traceGeneric)
   std::vector<qi::EventTrace> traces;
   qi::SignalLink id = obj.connect("traceObject",
     (boost::function<void(qi::EventTrace)>)
-    boost::bind(&pushTrace, boost::ref(traces), boost::ref(mutex), _1)).value();
+    boost::bind(&pushTrace, boost::ref(traces), boost::ref(mutex), ph::_1)).value();
   ASSERT_TRUE(qi::isValidSignalLink(id));
   obj.call<void>("sleep", qi::MilliSeconds{ 100 });
   for (unsigned i=0; i<20; ++i) {
@@ -991,7 +994,7 @@ TEST(TestObject, traceType)
   std::vector<qi::EventTrace> traces;
   qi::SignalLink id = oa1.connect("traceObject",
     (boost::function<void(qi::EventTrace)>)
-    boost::bind(&pushTrace, boost::ref(traces), boost::ref(mutex), _1)).value();
+    boost::bind(&pushTrace, boost::ref(traces), boost::ref(mutex), ph::_1)).value();
   ASSERT_TRUE(qi::isValidSignalLink(id));
 
   EXPECT_EQ(3, oa1.call<int>("add", 2));
@@ -1032,12 +1035,12 @@ TEST(TestObject, AdvertiseRealSignal)
   EXPECT_ANY_THROW(premote.future().hasValue(0));
 
   qi::Signal<int> sig;
-  sig.connect(boost::bind<void>(&bim, _1, boost::ref(plocal), "local"));
+  sig.connect(boost::bind<void>(&bim, ph::_1, boost::ref(plocal), "local"));
   qi::DynamicObjectBuilder gob;
   unsigned int id = gob.advertiseSignal("sig", &sig);
   ASSERT_LT(0u, id);
   qi::AnyObject obj = gob.object();
-  obj.connect("sig", boost::function<void(int)>(boost::bind<void>(&bim, _1, boost::ref(premote), "remote")));
+  obj.connect("sig", boost::function<void(int)>(boost::bind<void>(&bim, ph::_1, boost::ref(premote), "remote")));
 
   //test remote trigger
   qiLogInfo() << "remote trigger.";
@@ -1136,7 +1139,7 @@ void callMee2(int i, const qi::AnyArguments& pack) {
 TEST(TestObject, DynAnyArguments)
 {
   qi::DynamicObjectBuilder gob;
-  boost::function <void (const qi::AnyArguments&)> bf = boost::bind(&callMee2, 42, _1);
+  boost::function <void (const qi::AnyArguments&)> bf = boost::bind(&callMee2, 42, ph::_1);
   gob.advertiseMethod("callMee", &callMee);
   gob.advertiseMethod("callMee2", bf);
 
@@ -1421,7 +1424,7 @@ TEST(TestObject, EqualityDynamicObjectBuilder)
 
   builder.advertiseMethod("test", &fun);
   builder.advertiseMethod("objtest", &foo, &Foo::fun);
-  builder.advertiseMethod("testBind", (boost::function<int(const int&)>)boost::bind(&fun, 21, _1));
+  builder.advertiseMethod("testBind", (boost::function<int(const int&)>)boost::bind(&fun, 21, ph::_1));
   qi::AnyObject o0(builder.object());
   qi::AnyObject o1(builder.object());
 
@@ -1434,7 +1437,7 @@ TEST(TestObject, EqualityObjectTypeBuilder)
   // otherwise some arguments are copied
   builder.setThreadingModel(qi::ObjectThreadingModel_MultiThread);
   builder.advertiseMethod("add", &Adder::add);
-  builder.advertiseMethod("addTwo", boost::function<int(Adder*, int, int)>(boost::bind(&Adder::addTwo, _2, _3)));
+  builder.advertiseMethod("addTwo", boost::function<int(Adder*, int, int)>(boost::bind(&Adder::addTwo, ph::_2, ph::_3)));
   Adder a{0}, b{1};
   qi::AnyObject oa0 = builder.object(&a, &qi::AnyObject::deleteGenericObjectOnly);
   qi::AnyObject oa1 = builder.object(&a, &qi::AnyObject::deleteGenericObjectOnly);
@@ -1454,7 +1457,7 @@ TEST(TestObject, EqualityObjectTypeBuilderAsync)
   qi::ObjectTypeBuilder<MAdder> builder;
   builder.inherits<Adder>();
   builder.advertiseMethod("add", &Adder::add, qi::MetaCallType_Queued);
-  builder.advertiseMethod("addTwo", boost::function<int(Adder*, int, int)>(boost::bind(&Adder::addTwo, _2, _3)));
+  builder.advertiseMethod("addTwo", boost::function<int(Adder*, int, int)>(boost::bind(&Adder::addTwo, ph::_2, ph::_3)));
   MAdder a{0}, b{1};
   qi::AnyObject oa0 = builder.object(&a, &qi::AnyObject::deleteGenericObjectOnly);
   qi::AnyObject oa1 = builder.object(&a, &qi::AnyObject::deleteGenericObjectOnly);

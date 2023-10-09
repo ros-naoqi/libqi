@@ -40,6 +40,8 @@ do                                           \
 
 qiLogCategory("test");
 
+namespace ph = boost::placeholders;
+
 class Foo
 {
 public:
@@ -61,7 +63,7 @@ public:
 
 void Foo::subscribe1()
 {
-  _l1 = sig1.connect(boost::bind(&Foo::on1, this, _1, _2));
+  _l1 = sig1.connect(boost::bind(&Foo::on1, this, ph::_1, ph::_2));
   ASSERT_TRUE(qi::isValidSignalLink(_l1));
 }
 void Foo::unsubscribe1()
@@ -99,7 +101,7 @@ TEST(Proxy, Signal)
   PERSIST_ASSERT(, foo->count1() == 3, 500);
   // small hack, reuse foo function to test callback on proxy signal
   Foo foo2;
-  qi::SignalLink l =  proxy1.connect(boost::bind(&Foo::on1, &foo2, _1, _2));
+  qi::SignalLink l =  proxy1.connect(boost::bind(&Foo::on1, &foo2, ph::_1, ph::_2));
   ASSERT_TRUE(qi::isValidSignalLink(l));
   proxy1(3, 4);
   PERSIST_ASSERT(, foo->count1() == 10, 500);
@@ -124,7 +126,7 @@ public:
   }
   void subscribe()
   {
-    _link = prop.connect(boost::bind(&Bar::onProp, this, _1));
+    _link = prop.connect(boost::bind(&Bar::onProp, this, ph::_1));
     ASSERT_TRUE(qi::isValidSignalLink(_link));
   }
   void unsubscribe()
@@ -169,7 +171,7 @@ TEST(Proxy, Property)
   PERSIST_ASSERT(, bar->sum() == 3, 500);
 
   Bar bar2;
-  qi::SignalLink l = pp.connect(boost::bind(&Bar::onProp, &bar2, _1));
+  qi::SignalLink l = pp.connect(boost::bind(&Bar::onProp, &bar2, ph::_1));
   ASSERT_TRUE(qi::isValidSignalLink(l));
   bar->set(4);
   // this one is async (remote notify of local property set)
@@ -179,7 +181,7 @@ TEST(Proxy, Property)
   qi::os::msleep(200);
   ASSERT_EQ(4, bar2.sum());
   // reconnect to see if disconnect did not break anything
-  l = pp.connect(boost::bind(&Bar::onProp, &bar2, _1));
+  l = pp.connect(boost::bind(&Bar::onProp, &bar2, ph::_1));
   bar->set(4);
   PERSIST_ASSERT(, bar2.sum() == 8, 500);
 
@@ -187,7 +189,7 @@ TEST(Proxy, Property)
   qi::AnyObject client2 = p.client()->service("bar2");
   qi::ProxyProperty<int> pp2(client2, "prop");
   Bar bar3;
-  pp2.connect(boost::bind(&Bar::onProp, &bar3, _1));
+  pp2.connect(boost::bind(&Bar::onProp, &bar3, ph::_1));
   qiLogDebug() << "set 2";
   pp.set(2);
   PERSIST(, bar3.sum() == 2, 1000);

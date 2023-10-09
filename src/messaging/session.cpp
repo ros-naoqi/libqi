@@ -27,6 +27,8 @@ KA_WARNING_DISABLE(4355, )
 
 qiLogCategory("qimessaging.session");
 
+namespace ph = boost::placeholders;
+
 namespace qi {
   SessionPrivate::SessionPrivate(qi::Session* session,
                                  bool enforceAuth,
@@ -45,7 +47,7 @@ namespace qi {
     session->serviceUnregistered.setCallType(qi::MetaCallType_Queued);
 
     _sdClient.connected.connect(session->connected);
-    _sdClient.disconnected.connect(&SessionPrivate::onServiceDirectoryClientDisconnected, this, _1);
+    _sdClient.disconnected.connect(&SessionPrivate::onServiceDirectoryClientDisconnected, this, ph::_1);
     _sdClient.disconnected.connect(session->disconnected);
     _sdClient.serviceAdded.connect(session->serviceRegistered);
     _sdClient.serviceRemoved.connect(session->serviceUnregistered);
@@ -480,7 +482,7 @@ namespace qi {
 
     qi::Promise<AnyValue> promise;
     promise.setOnCancel([ret](qi::Promise<AnyValue>&) mutable { ret.cancel(); });
-    ret.then(qi::bind(qi::detail::futureAdapter<qi::AnyValue>, _1, promise));
+    ret.then(qi::bind(qi::detail::futureAdapter<qi::AnyValue>, ph::_1, promise));
     return promise.future();
   }
 

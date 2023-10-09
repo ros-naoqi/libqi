@@ -19,6 +19,8 @@
 
 qiLogCategory("test");
 
+namespace ph = boost::placeholders;
+
 namespace
 {
 const auto usualTimeoutMs = 300;
@@ -91,14 +93,14 @@ TEST(TestSignal, TestCompilation)
 
   //do not count
   s.connect(qi::AnyFunction::from(&Foo::func, f));
-  s.connect(boost::bind<void>(&Foo::func, f, _1));
+  s.connect(boost::bind<void>(&Foo::func, f, ph::_1));
 
-  s.connect(boost::bind(&foo, &res, 12, _1));
-  s.connect(boost::bind(&foo2, &res, 12, _1));
-  s.connect(boost::bind<void>(&Foo::func1, f, &res, _1));
-  s.connect(boost::bind<void>(&Foo::func2, f, &res, 5, _1));
+  s.connect(boost::bind(&foo, &res, 12, ph::_1));
+  s.connect(boost::bind(&foo2, &res, 12, ph::_1));
+  s.connect(boost::bind<void>(&Foo::func1, f, &res, ph::_1));
+  s.connect(boost::bind<void>(&Foo::func2, f, &res, 5, ph::_1));
   s.connect(boost::bind(&foo3, &res, f));
-  s.connect(boost::bind(&foolast, _1, prom, &res));
+  s.connect(boost::bind(&foolast, ph::_1, prom, &res));
 
   s(42);
 
@@ -294,7 +296,7 @@ TEST(TestSignal, AutoDisconnect)
   qi::Atomic<int> r{0};
   boost::shared_ptr<Foo> foo(new Foo());
   qi::Signal<qi::Atomic<int>*, int> sig;
-  sig.connect(&Foo::func1, boost::weak_ptr<Foo>(foo), _1, _2).setCallType(qi::MetaCallType_Direct);
+  sig.connect(&Foo::func1, boost::weak_ptr<Foo>(foo), ph::_1, ph::_2).setCallType(qi::MetaCallType_Direct);
   sig(&r, 0);
   ASSERT_EQ(1, r.load());
   foo.reset();
@@ -344,7 +346,7 @@ TEST(TestSignal, BadArity)
   EXPECT_ANY_THROW(s.connect(qi::SignalSubscriber(qi::AnyFunction::from(&foo2))));
   EXPECT_ANY_THROW(s.connect(qi::AnyFunction::from(
     boost::function<void(qi::Atomic<int>*, int)>{
-      boost::bind(&Foo::func1, static_cast<Foo*>(nullptr), _1, _2)
+      boost::bind(&Foo::func1, static_cast<Foo*>(nullptr), ph::_1, ph::_2)
     })));
 }
 
@@ -447,7 +449,7 @@ TEST(TestSignal, SignalNBind)
   boost::shared_ptr<SigHolder> so(new SigHolder);
   qi::AnyObject op = qi::AnyReference::from(so).to<qi::AnyObject>();
   qi::detail::printMetaObject(std::cerr, op.metaObject());
-  op.connect("s1", (boost::function<void(int)>)boost::bind<void>(&lol, _1, boost::ref(res)));
+  op.connect("s1", (boost::function<void(int)>)boost::bind<void>(&lol, ph::_1, boost::ref(res)));
   op.post("s1", 2);
   for (unsigned i=0; i<30 && res!=2; ++i)
     std::this_thread::sleep_for(std::chrono::milliseconds{ 10 });
@@ -493,11 +495,11 @@ TEST(TestSignal, Dynamic)
   int trig = 0;
   s.setCallType(qi::MetaCallType_Direct);
   s.connect((boost::function<void()>) boost::bind(&dynTest0, boost::ref(trig)));
-  s.connect((boost::function<void(int)>) boost::bind(&dynTest1, boost::ref(trig), _1));
-  s.connect((boost::function<void(int, int)>) boost::bind(&dynTest2, boost::ref(trig), _1, _2));
-  s.connect((boost::function<void(int, std::string)>) boost::bind(&dynTest3, boost::ref(trig), _1, _2));
-  s.connect(qi::AnyFunction::fromDynamicFunction(boost::bind(&dynTestN2, boost::ref(trig), _1)));
-  s.connect((boost::function<void(const qi::AnyArguments&)>)(boost::bind(&dynTestN, boost::ref(trig), _1)));
+  s.connect((boost::function<void(int)>) boost::bind(&dynTest1, boost::ref(trig), ph::_1));
+  s.connect((boost::function<void(int, int)>) boost::bind(&dynTest2, boost::ref(trig), ph::_1, ph::_2));
+  s.connect((boost::function<void(int, std::string)>) boost::bind(&dynTest3, boost::ref(trig), ph::_1, ph::_2));
+  s.connect(qi::AnyFunction::fromDynamicFunction(boost::bind(&dynTestN2, boost::ref(trig), ph::_1)));
+  s.connect((boost::function<void(const qi::AnyArguments&)>)(boost::bind(&dynTestN, boost::ref(trig), ph::_1)));
   int a, b;
   std::string c;
   qi::GenericFunctionParameters params;
@@ -530,7 +532,7 @@ TEST(TestSignal, OnSubscriber)
 {
   std::atomic<bool> subscribers(false);
 
-  qi::Signal<int> sig(boost::bind(onSubs, boost::ref(subscribers), _1));
+  qi::Signal<int> sig(boost::bind(onSubs, boost::ref(subscribers), ph::_1));
   ASSERT_FALSE(subscribers);
   qi::SignalLink l = sig.connect(&callback);
   ASSERT_TRUE(qi::isValidSignalLink(l));
@@ -550,8 +552,8 @@ TEST(TestSignal, SignalToSignalWithExtraArgument)
   qi::Promise<int> target1, target2;
   qi::Signal<int> signal1;
   qi::Signal<int, int> signal2;
-  signal1.connect(boost::bind(boost::ref(signal2), _1, 42));
-  signal2.connect(store2, target1, target2, _1, _2);
+  signal1.connect(boost::bind(boost::ref(signal2), ph::_1, 42));
+  signal2.connect(store2, target1, target2, ph::_1, ph::_2);
   signal1(12);
   EXPECT_EQ(12, target1.future().value());
   EXPECT_EQ(42, target2.future().value());
