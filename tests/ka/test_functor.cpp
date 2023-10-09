@@ -1,4 +1,5 @@
 #include <tuple>
+#include <boost/optional/optional_io.hpp>
 #include <ka/memory.hpp>
 #include <ka/functorcontainer.hpp>
 #include <ka/functor.hpp>

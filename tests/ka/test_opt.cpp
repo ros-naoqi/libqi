@@ -1,6 +1,7 @@
 #include <iterator>
 #include <memory>
 #include <stdexcept>
+#include <boost/optional/optional_io.hpp>
 #include <gtest/gtest.h>
 #include <ka/conceptpredicate.hpp>
 #include <ka/opt.hpp>
@@ -1095,7 +1096,7 @@ using opt_types = testing::Types<opt_traits<boost::optional>, opt_traits<ka::opt
 TYPED_TEST_CASE(OptionalFlatten, opt_types);
 
 // Internal optional is extracted.
-TYPED_TEST(OptionalFlatten, NonEmpty) {
+ TYPED_TEST(OptionalFlatten, NonEmpty) {
   using namespace ka;
   using F = TestFixture;
   using test::A;
