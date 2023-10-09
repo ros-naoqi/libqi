@@ -16,6 +16,8 @@ KA_WARNING_DISABLE(4355, )
 
 qiLogCategory("qimessaging.sessionservice");
 
+namespace ph = boost::placeholders;
+
 namespace qi {
 
   Session_Service::Session_Service(TransportSocketCache* socketCache,
@@ -224,7 +226,7 @@ namespace qi {
         qiLogVerbose() << "Fetching metaobject (1) for requestId = " << requestId;
         metaObjFut.connect(track(
           boost::bind(
-            &Session_Service::onRemoteObjectComplete, this, _1, requestId),
+            &Session_Service::onRemoteObjectComplete, this, ph::_1, requestId),
           this));
         mustSetPromise = false;
       }
@@ -262,7 +264,7 @@ namespace qi {
       qiLogVerbose() << "Fetching metaobject (2) for requestId = " << requestId;
       metaObjFut.connect(track(
         boost::bind(
-          &Session_Service::onRemoteObjectComplete, this, _1, requestId),
+          &Session_Service::onRemoteObjectComplete, this, ph::_1, requestId),
         this));
       mustSetPromise = false;
       return;
@@ -567,7 +569,7 @@ namespace qi {
       qiLogVerbose() << "Requesting socket from cache. service = '" << service << "', "
         "requestId = " << *requestId;
       Future<qi::MessageSocketPtr> f = _socketCache->socket(fut.value());
-      f.connect(track(boost::bind(&Session_Service::onTransportSocketResult, this, _1, *requestId), this));
+      f.connect(track(boost::bind(&Session_Service::onTransportSocketResult, this, ph::_1, *requestId), this));
       mustSetPromise = false;
     }, this));
     return result;

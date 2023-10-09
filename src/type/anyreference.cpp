@@ -28,6 +28,8 @@ namespace std
 
 qiLogCategory("qitype.genericvalue");
 
+namespace ph = boost::placeholders;
+
 namespace qi
 {
 
@@ -105,7 +107,7 @@ namespace detail
               new GenericObject(
                 static_cast<ObjectTypeInterface*>(pointedSrc._type),
                 pointedSrc._value, pointedSrc.to<AnyObject>().uid()),
-              boost::bind(dropIt, _1, qi::AnyValue(*this)));
+              boost::bind(dropIt, ph::_1, qi::AnyValue(*this)));
         return AnyReference::from(o).convert((TypeInterface*)targetType);
       }
       if (pointedDstPair.ownsReference())

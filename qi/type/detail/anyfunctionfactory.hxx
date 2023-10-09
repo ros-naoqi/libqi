@@ -568,7 +568,8 @@ KA_WARNING_DISABLE(, noexcept-type)
     template<typename C, typename R>
     AnyFunction makeAnyFunctionBare(R (C::*fun)(const AnyArguments&))
     {
-      AnyFunction res = AnyFunction::fromDynamicFunction(boost::bind(&bouncer<C, R>, _1, fun));
+      namespace ph = boost::placeholders;
+      AnyFunction res = AnyFunction::fromDynamicFunction(boost::bind(&bouncer<C, R>, ph::_1, fun));
       // The signature storage in GO will drop first argument, and bug if none is present
       const_cast<std::vector<TypeInterface*> &>(res.functionType()->argumentsType()).push_back(typeOf<AnyValue>());
       return res;
@@ -577,8 +578,9 @@ KA_WARNING_DISABLE(, noexcept-type)
     template<typename R>
     AnyFunction makeAnyFunctionBare(R (*fun)(const AnyArguments&))
     {
+      namespace ph = boost::placeholders;
       boost::function<R (const AnyArguments&)> fu = fun;
-      AnyFunction res = AnyFunction::fromDynamicFunction(boost::bind(&bouncerBF<R>, _1, fun));
+      AnyFunction res = AnyFunction::fromDynamicFunction(boost::bind(&bouncerBF<R>, ph::_1, fun));
       // The signature storage in GO will drop first argument, and bug if none is present
       const_cast<std::vector<TypeInterface*> &>(res.functionType()->argumentsType()).push_back(typeOf<AnyValue>());
       return res;
@@ -586,7 +588,8 @@ KA_WARNING_DISABLE(, noexcept-type)
 
     template<typename R> AnyFunction makeAnyFunctionBare(boost::function<R (const AnyArguments&)> fun)
     {
-      AnyFunction res = AnyFunction::fromDynamicFunction(boost::bind(&bouncerBF<R>, _1, fun));
+      namespace ph = boost::placeholders;
+      AnyFunction res = AnyFunction::fromDynamicFunction(boost::bind(&bouncerBF<R>, ph::_1, fun));
       // The signature storage in GO will drop first argument, and bug if none is present
       const_cast<std::vector<TypeInterface*> &>(res.functionType()->argumentsType()).push_back(typeOf<AnyValue>());
       return res;

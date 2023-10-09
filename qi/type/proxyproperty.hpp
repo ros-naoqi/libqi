@@ -69,12 +69,14 @@ namespace qi
     template<typename T>
     void setUpProxy(PropertyImpl<T>& prop, AnyWeakObject object, const std::string& propertyName)
     {
+      namespace ph = boost::placeholders;
+      
       // signal part
       details_proxysignal::setUpProxy(prop, object, propertyName);
 
       // property part
       prop._asyncGetter = boost::bind(Getter<T>{}, object, propertyName);
-      prop._asyncSetter = boost::bind(Setter<T>{}, _1, _2, object, propertyName);
+      prop._asyncSetter = boost::bind(Setter<T>{}, ph::_1, ph::_2, object, propertyName);
     }
 
     template<typename T>

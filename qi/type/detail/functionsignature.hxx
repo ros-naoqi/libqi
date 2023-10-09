@@ -89,7 +89,7 @@ namespace qi {
       }
       static qi::Signature makeSignature()
       {
-        // Reconstruct the boost::bind(instance, _1, _2...) signature
+        // Reconstruct the boost::bind(instance, ph::_1, ph::_2...) signature
         using RetType = typename boost::function_types::result_type<T>::type;
         using MemArgsType = typename boost::function_types::parameter_types<T>::type;
         using ArgsType = typename boost::mpl::pop_front<MemArgsType>::type;

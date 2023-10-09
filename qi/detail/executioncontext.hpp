@@ -201,7 +201,8 @@ typename boost::disable_if<std::is_same<R, void>,
   promise.setup(
       boost::bind(&detail::futureCancelAdapter<void>,
                   boost::weak_ptr<detail::FutureBaseTyped<void> >(f.impl())));
-  f.connect(boost::bind(&detail::forwardError<R>, _1, promise), FutureCallbackType_Sync);
+  namespace ph = boost::placeholders;
+  f.connect(boost::bind(&detail::forwardError<R>, ph::_1, promise), FutureCallbackType_Sync);
   return promise.future();
 }
 
@@ -211,6 +212,7 @@ typename boost::disable_if<std::is_same<R, void>,
     ExecutionContext::async(const boost::function<R()>& callback,
                             qi::SteadyClockTimePoint tp)
 {
+  namespace ph = boost::placeholders;
   detail::DelayedPromise<R> promise;
   qi::Future<void> f = async(boost::function<void()>(boost::bind(
                                  detail::callAndSet<R>, promise, callback)),
@@ -218,7 +220,7 @@ typename boost::disable_if<std::is_same<R, void>,
   promise.setup(
       boost::bind(&detail::futureCancelAdapter<void>,
                   boost::weak_ptr<detail::FutureBaseTyped<void> >(f.impl())));
-  f.connect(boost::bind(&detail::forwardError<R>, _1, promise), FutureCallbackType_Sync);
+  f.connect(boost::bind(&detail::forwardError<R>, ph::_1, promise), FutureCallbackType_Sync);
   return promise.future();
 }
 
@@ -247,24 +249,26 @@ struct ToPost
 template <typename F, typename R>
 Future<R> ExecutionContext::asyncAt(F&& callback, qi::SteadyClockTimePoint tp, ExecutionOptions options)
 {
+  namespace ph = boost::placeholders;
   ToPost<R, typename std::decay<F>::type> topost(std::forward<F>(callback));
   auto promise = topost.promise;
   qi::Future<void> f = asyncAtImpl(std::move(topost), tp, options);
   promise.setup(boost::bind(&detail::futureCancelAdapter<void>,
                             boost::weak_ptr<detail::FutureBaseTyped<void> >(f.impl())));
-  f.connect(boost::bind(&detail::forwardError<R>, _1, promise), FutureCallbackType_Sync);
+  f.connect(boost::bind(&detail::forwardError<R>, ph::_1, promise), FutureCallbackType_Sync);
   return promise.future();
 }
 
 template <typename F, typename R>
 Future<R> ExecutionContext::asyncDelay(F&& callback, qi::Duration delay, ExecutionOptions options)
 {
+  namespace ph = boost::placeholders;
   ToPost<R, typename std::decay<F>::type> topost(std::forward<F>(callback));
   auto promise = topost.promise;
   qi::Future<void> f = asyncDelayImpl(std::move(topost), delay, options);
   promise.setup(boost::bind(&detail::futureCancelAdapter<void>,
                             boost::weak_ptr<detail::FutureBaseTyped<void> >(f.impl())));
-  f.connect(boost::bind(&detail::forwardError<R>, _1, promise), FutureCallbackType_Sync);
+  f.connect(boost::bind(&detail::forwardError<R>, ph::_1, promise), FutureCallbackType_Sync);
   return promise.future();
 }
 }

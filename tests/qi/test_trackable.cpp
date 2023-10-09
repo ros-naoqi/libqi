@@ -10,6 +10,8 @@
 
 qiLogCategory("test");
 
+namespace ph = boost::placeholders;
+
 void _delayValue(std::chrono::milliseconds delay, qi::Promise<void> p)
 {
   std::this_thread::sleep_for(delay);
@@ -54,7 +56,7 @@ TEST(FutureTrack, WeakPtr)
   EXPECT_EQ(1, v);
   v=0;
   // check that _1 works in connect
-  deprecatedConnect(delayValue(std::chrono::milliseconds{ -1 }), &set_from_future, std::ref(v), _1);
+  deprecatedConnect(delayValue(std::chrono::milliseconds{ -1 }), &set_from_future, std::ref(v), ph::_1);
   for (int i=0; i<50&&v!=2; ++i)
     std::this_thread::sleep_for(std::chrono::milliseconds{10});
   EXPECT_EQ(2, v);
@@ -98,7 +100,7 @@ TEST(FutureTrack, Trackable)
   EXPECT_EQ(1, v);
   v=0;
   // check that _1 works in connect
-  deprecatedConnect(delayValue(std::chrono::milliseconds{ -1 }), &set_from_future, std::ref(v), _1);
+  deprecatedConnect(delayValue(std::chrono::milliseconds{ -1 }), &set_from_future, std::ref(v), ph::_1);
   for (int i=0; i<50&&v!=2; ++i)
     std::this_thread::sleep_for(std::chrono::milliseconds{10});
   EXPECT_EQ(2, v);

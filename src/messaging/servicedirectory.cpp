@@ -31,6 +31,8 @@ KA_WARNING_DISABLE(4355, )
 
 qiLogCategory("qimessaging.servicedirectory");
 
+namespace ph = boost::placeholders;
+
 namespace qi
 {
 
@@ -551,7 +553,7 @@ namespace qi
   void ServiceDirectory::_setServiceBoundObject(boost::shared_ptr<BoundObject> bo)
   {
     serviceBoundObject = bo;
-    bo->setOnSocketUnbound(boost::bind(&ServiceDirectory::removeClientSocket, this, _1));
+    bo->setOnSocketUnbound(boost::bind(&ServiceDirectory::removeClientSocket, this, ph::_1));
   }
 
 } // !qi

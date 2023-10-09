@@ -229,7 +229,8 @@ qi::FutureSync<T> GenericObject::property(const std::string& name)
   }
   qi::Future<AnyValue> f = property(pid);
   qi::Promise<T> p;
-  f.connect(boost::bind(&detail::futureAdapterVal<T>,_1, p),
+  namespace ph = boost::placeholders;
+  f.connect(boost::bind(&detail::futureAdapterVal<T>, ph::_1, p),
       FutureCallbackType_Sync);
   return p.future();
 }
