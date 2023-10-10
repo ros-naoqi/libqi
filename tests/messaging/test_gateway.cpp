@@ -23,6 +23,8 @@
 
 qiLogCategory("TestGateway");
 
+namespace ph = boost::placeholders;
+
 namespace qi
 {
 
@@ -202,7 +204,7 @@ namespace
 
     {
       qi::Promise<int> sync;
-      serviceHost->serviceRegistered.connect(&serviceRegistered, _1, sync);
+      serviceHost->serviceRegistered.connect(&serviceRegistered, ph::_1, sync);
       serviceHost->listen("tcp://localhost:0");
       serviceHost->registerService("my_service", makeBaseService());
       sync.future().wait();

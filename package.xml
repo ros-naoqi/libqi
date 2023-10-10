@@ -4,6 +4,7 @@
   <version>2.9.7</version>
   <description>Aldebaran's libqi: a core library for NAOqiOS development</description>
 
+  <maintainer email="victor.paleologue@palaio.eu">Victor Paléologue</maintainer>
   <maintainer email="mbusy@softbankrobotics.com">Maxime Busy</maintainer>
   <maintainer email="surya.ambrose@gmail.com">Surya Ambrose</maintainer>
   <license>BSD</license>
@@ -15,6 +16,7 @@
 
   <depend>boost</depend>
   <depend>libssl-dev</depend>
+  <test_depend>libgmock-dev</test_depend>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

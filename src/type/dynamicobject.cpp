@@ -21,6 +21,8 @@
 
 qiLogCategory("qitype.dynamicobject");
 
+namespace ph = boost::placeholders;
+
 namespace qi
 {
 
@@ -520,7 +522,7 @@ namespace qi
 
     auto deleter = [&]() -> boost::function<void(GenericObject*)> {
     if (destroyObject || onDelete)
-      return boost::bind(&cleanupDynamicObject, _1, destroyObject, onDelete);
+      return boost::bind(&cleanupDynamicObject, ph::_1, destroyObject, onDelete);
     else
       return &AnyObject::deleteGenericObjectOnly;
     }();

@@ -22,6 +22,8 @@
 
 qiLogCategory("qimessaging.transportserver");
 
+namespace ph = boost::placeholders;
+
 namespace qi
 {
   const int ifsMonitoringTimeout = 5 * 1000 * 1000; // in usec
@@ -93,7 +95,7 @@ namespace qi
     }
     _s = sock::makeSocketWithContextPtr<sock::NetworkAsio>(PTR_GET_IO_SERVICE(_acceptor), _sslContext);
     _acceptor->async_accept(_s->lowest_layer(),
-                           boost::bind(_onAccept, shared_from_this(), _1, _s));
+                           boost::bind(_onAccept, shared_from_this(), ph::_1, _s));
   }
 
   void TransportServerAsioPrivate::close() {
@@ -329,7 +331,7 @@ namespace qi
 
     _s = sock::makeSocketWithContextPtr<sock::NetworkAsio>(PTR_GET_IO_SERVICE(_acceptor), _sslContext);
     _acceptor->async_accept(_s->lowest_layer(),
-      boost::bind(_onAccept, shared_from_this(), _1, _s));
+      boost::bind(_onAccept, shared_from_this(), ph::_1, _s));
     _connectionPromise.setValue(0);
     return _connectionPromise.future();
   }

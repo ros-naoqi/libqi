@@ -399,6 +399,19 @@ namespace std {
   KA_TEST_DEFINE_HASH(ka::test::F)
   KA_TEST_DEFINE_HASH(ka::test::G)
 #undef KA_TEST_DEFINE_HASH
+
+#define KA_TEST_DEFINE_OSTREAM(TYPE)                                  \
+  static std::ostream& operator<<(std::ostream &out, TYPE const &x) { \
+    return out << #TYPE << "(" << (void*)&x << ")";                   \
+  }
+  KA_TEST_DEFINE_OSTREAM(ka::test::A)
+  KA_TEST_DEFINE_OSTREAM(ka::test::B)
+  KA_TEST_DEFINE_OSTREAM(ka::test::C)
+  KA_TEST_DEFINE_OSTREAM(ka::test::D)
+  KA_TEST_DEFINE_OSTREAM(ka::test::E)
+  KA_TEST_DEFINE_OSTREAM(ka::test::F)
+  KA_TEST_DEFINE_OSTREAM(ka::test::G)
+#undef KA_TEST_DEFINE_OSTREAM
 } // namespace std
 
 #endif // KA_TESTUTILS_HPP

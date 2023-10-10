@@ -23,6 +23,8 @@ KA_WARNING_POP()
 
 qiLogCategory("test");
 
+namespace ph = boost::placeholders;
+
 class ObjectEvent : public ::testing::Test
 {
 public:
@@ -64,7 +66,7 @@ TEST_F(ObjectEvent, Simple)
   ob.advertiseSignal<int>("fire");
   qi::AnyObject obj(ob.object());
   EXPECT_LE(1U, obj.metaObject().signalMap().size());
-  qi::SignalLink linkId = obj.connect("fire", deprecatedBind<void(int)>(&ObjectEvent::onFire, this, _1)).value();
+  qi::SignalLink linkId = obj.connect("fire", deprecatedBind<void(int)>(&ObjectEvent::onFire, this, ph::_1)).value();
   ASSERT_TRUE(qi::isValidSignalLink(linkId));
   obj.post("fire", 42);
   EXPECT_TRUE(pPayload.future().wait() != qi::FutureState_Running);
@@ -90,7 +92,7 @@ TEST_F(ObjectEvent, ConnectBind)
   ob.advertiseSignal<int>("fire");
   ob.advertiseSignal<int, int>("fire2");
   qi::AnyObject obj(ob.object());
-  qi::SignalLink link = obj.connect("fire", deprecatedBind<void(int)>(&ObjectEvent::onFire, this, _1)).value();
+  qi::SignalLink link = obj.connect("fire", deprecatedBind<void(int)>(&ObjectEvent::onFire, this, ph::_1)).value();
   ASSERT_TRUE(qi::isValidSignalLink(link));
   obj.post("fire", 42);
   EXPECT_TRUE(pPayload.future().wait() != qi::FutureState_Running);
@@ -102,9 +104,9 @@ TEST_F(ObjectEvent, ConnectBind)
   );
   // Argument type mismatch
   EXPECT_ANY_THROW(
-    obj.connect("fire", boost::function<void(const std::string&)>(boost::bind<void>(&readString, _1))).value()
+    obj.connect("fire", boost::function<void(const std::string&)>(boost::bind<void>(&readString, ph::_1))).value()
   );
-  link = obj.connect("fire2", deprecatedBind<void(int, int)>(&ObjectEvent::onFire, this, _2)).value();
+  link = obj.connect("fire2", deprecatedBind<void(int, int)>(&ObjectEvent::onFire, this, ph::_2)).value();
   EXPECT_TRUE(link != 0);
   pPayload = qi::Promise<int>();
   obj.post("fire2", 40, 41);
@@ -117,7 +119,7 @@ TEST_F(ObjectEvent, EmitMethod)
 {
   lastPayload = 0;
   qi::DynamicObjectBuilder ob;
-  ob.advertiseMethod("fire", deprecatedBind<void(int)>(&ObjectEvent::onFire, this, _1));
+  ob.advertiseMethod("fire", deprecatedBind<void(int)>(&ObjectEvent::onFire, this, ph::_1));
   qi::AnyObject obj(ob.object());
   pPayload = qi::Promise<int>();
   obj.post("fire", 23);

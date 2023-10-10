@@ -16,6 +16,8 @@
 
 qiLogCategory("qimessaging.objectregistrar");
 
+namespace ph = boost::placeholders;
+
 namespace qi {
 
   BoundService::~BoundService()
@@ -131,7 +133,7 @@ namespace qi {
 
     // ack the Service directory to tell that we are ready
     qi::Future<void> fut2 = _sdClient->serviceReady(idx);
-    fut2.connect(boost::bind(&serviceReady, _1, result, idx));
+    fut2.connect(boost::bind(&serviceReady, ph::_1, result, idx));
   }
 
   qi::Future<unsigned int> ObjectRegistrar::registerService(const std::string &name, qi::AnyObject obj)
@@ -159,7 +161,7 @@ namespace qi {
 
       auto future = _sdClient->registerService(si);
       future.connect(
-        track(boost::bind<void>(&ObjectRegistrar::onFutureFinished, this, _1, id, prom), &_tracker));
+        track(boost::bind<void>(&ObjectRegistrar::onFutureFinished, this, ph::_1, id, prom), &_tracker));
     }, &_tracker));
     return prom.future();
   };

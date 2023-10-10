@@ -6,6 +6,8 @@
 #include <adder.hpp>
 
 qiLogCategory("Adder");
+
+namespace ph = boost::placeholders;
 using qi::Object;
 using qi::WeakObject;
 using qi::AnyObject;
@@ -52,7 +54,7 @@ QI_REGISTER_OBJECT_FACTORY_BUILDER_FOR(Adder, AdderImpl);
 
 AdderImpl::AdderImpl()
 {
-  value = Value(Value::Getter(), boost::bind(&AdderImpl::onValue, this, _1, _2));
+  value = Value(Value::Getter(), boost::bind(&AdderImpl::onValue, this, ph::_1, ph::_2));
   qiLogVerbose() << "Prop address: " << &value;
 }
 
