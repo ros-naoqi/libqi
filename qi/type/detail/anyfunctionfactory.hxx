@@ -28,7 +28,7 @@
 #include <boost/function_types/member_function_pointer.hpp>
 #include <boost/function_types/result_type.hpp>
 #include <boost/function_types/parameter_types.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/any.hpp>
 #include <boost/thread/mutex.hpp>
 #include <qi/atomic.hpp>

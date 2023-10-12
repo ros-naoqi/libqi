@@ -9,7 +9,7 @@
 
 #include <vector>
 #include <utility> // pair
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <ka/errorhandling.hpp>
 #include <qi/eventloop.hpp>
 #include <qi/log.hpp>

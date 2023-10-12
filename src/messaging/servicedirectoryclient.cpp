@@ -372,7 +372,7 @@ namespace qi {
 
     connecting.connect(
       track(boost::bind(&ServiceDirectoryClient::onSocketConnected, this, _stateData.sdSocket,
-                              _1, promise), this));
+                              ph::_1, promise), this));
     return promise.future();
   }
 

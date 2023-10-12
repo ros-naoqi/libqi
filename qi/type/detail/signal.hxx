@@ -9,7 +9,7 @@
 
 #include <qi/trackable.hpp>
 #include <qi/type/detail/manageable.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <qi/type/detail/functionsignature.hxx>
 
 namespace qi

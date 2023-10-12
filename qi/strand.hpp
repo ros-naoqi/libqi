@@ -281,7 +281,7 @@ private:
 #define typedefi(z, n, _)                                   \
   typedef typename boost::function_traits<T>::BOOST_PP_CAT( \
       BOOST_PP_CAT(arg, BOOST_PP_INC(n)), _type) BOOST_PP_CAT(P, n);
-#define placeholders(z, n, __) , BOOST_PP_CAT(_, BOOST_PP_INC(n))
+#define placeholders(z, n, __) , BOOST_PP_CAT(ph::_, BOOST_PP_INC(n))
 #define genCall(n, ATYPEDECL, ATYPES, ADECL, AUSE, comma)                   \
   template <typename T>                                                     \
   struct SchedulerHelper<n, T>                                              \
@@ -291,6 +291,7 @@ private:
     static boost::function<T> _scheduler(const boost::function<T>& f,       \
                                          Strand* strand)                    \
     {                                                                       \
+      namespace ph = boost::placeholders;                             \
       return qi::bind<T>(&_asyncCall, strand,                               \
                          f BOOST_PP_REPEAT(n, placeholders, _));            \
     }                                                                       \
