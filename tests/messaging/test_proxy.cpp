@@ -93,7 +93,7 @@ TEST(Proxy, Signal)
   // The session must die before foo.
   TestSessionPair p;
   p.server()->registerService("foo", gfoo);
-  qi::AnyObject client = p.client()->service("foo");
+  qi::AnyObject client = p.client()->service("foo").value();
   ASSERT_EQ(0, client.call<int>("count1"));
   qi::ProxySignal<void(int, int)> proxy1(client, "sig1");
   foo->subscribe1();
@@ -150,7 +150,7 @@ TEST(Proxy, Property)
   p.server()->registerService("bar", gbar);
   // we need that to force two clients
   p.server()->registerService("bar2", gbar);
-  qi::AnyObject client = p.client()->service("bar");
+  qi::AnyObject client = p.client()->service("bar").value();
   ASSERT_EQ(0, client.call<int>("sum"));
 
   qi::ProxyProperty<int> pp(client, "prop");
@@ -186,7 +186,7 @@ TEST(Proxy, Property)
   PERSIST_ASSERT(, bar2.sum() == 8, 500);
 
   // proxy-proxy
-  qi::AnyObject client2 = p.client()->service("bar2");
+  qi::AnyObject client2 = p.client()->service("bar2").value();
   qi::ProxyProperty<int> pp2(client2, "prop");
   Bar bar3;
   pp2.connect(boost::bind(&Bar::onProp, &bar3, ph::_1));

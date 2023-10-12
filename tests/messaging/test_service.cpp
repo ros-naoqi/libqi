@@ -71,14 +71,14 @@ TEST(QiService, RemoteObjectCacheServerClose)
 
   p.server()->registerService("serviceTest", obj);
   qi::Future<qi::AnyObject> fut;
-  fut = p.client()->service("serviceTest");
+  fut = p.client()->service("serviceTest").value();
   EXPECT_FALSE(fut.hasError());
 
   EXPECT_EQ(std::string("titi"), fut.value().call<std::string>("reply", "titi"));
 
   p.server()->close();
 
-  PERSIST_ASSERT(fut = p.client()->service("serviceTest"), fut.hasError(), std::chrono::milliseconds{1000});
+  PERSIST_ASSERT(fut = p.client()->service("serviceTest").value(), fut.hasError(), std::chrono::milliseconds{1000});
 }
 
 
@@ -92,14 +92,14 @@ TEST(QiService, RemoteObjectCacheUnregister)
 
   unsigned int idx = p.server()->registerService("serviceTest", obj).value();
   qi::Future<qi::AnyObject> fut;
-  fut = p.client()->service("serviceTest");
+  fut = p.client()->service("serviceTest").value();
   EXPECT_FALSE(fut.hasError());
 
   EXPECT_EQ(std::string("titi"), fut.value().call<std::string>("reply", "titi"));
 
   p.server()->unregisterService(idx);
 
-  PERSIST_ASSERT(fut = p.client()->service("serviceTest"), fut.hasError(), std::chrono::milliseconds{1000});
+  PERSIST_ASSERT(fut = p.client()->service("serviceTest").value(), fut.hasError(), std::chrono::milliseconds{1000});
 
 }
 
@@ -114,20 +114,20 @@ TEST(QiService, RemoteObjectCacheABAUnregister)
 
   unsigned int idx = p.server()->registerService("serviceTest", obj).value();
   qi::Future<qi::AnyObject> fut;
-  fut = p.client()->service("serviceTest");
+  fut = p.client()->service("serviceTest").value();
   EXPECT_FALSE(fut.hasError());
 
   EXPECT_EQ(std::string("titi"), fut.value().call<std::string>("reply", "titi"));
 
   p.server()->unregisterService(idx);
 
-  PERSIST_ASSERT(fut = p.client()->service("serviceTest"), fut.hasError(), std::chrono::milliseconds{1000});
+  PERSIST_ASSERT(fut = p.client()->service("serviceTest").value(), fut.hasError(), std::chrono::milliseconds{1000});
 
   unsigned int idx2 = p.server()->registerService("serviceTest", obj).value();
   //new service should not have a previoulsy registered ID
   EXPECT_NE(idx2, idx);
 
-  fut = p.client()->service("serviceTest");
+  fut = p.client()->service("serviceTest").value();
   EXPECT_FALSE(fut.hasError());
 
   qi::Future<std::string> fret = fut.value().async<std::string>("reply", "titi");
@@ -151,14 +151,14 @@ TEST(QiService, RemoteObjectCacheABANewServer)
 
   unsigned int idx = p.server()->registerService("serviceTest", obj).value();
   qi::Future<qi::AnyObject> fut;
-  fut = p.client()->service("serviceTest");
+  fut = p.client()->service("serviceTest").value();
   EXPECT_FALSE(fut.hasError());
 
   EXPECT_EQ(std::string("titi"), fut.value().call<std::string>("reply", "titi"));
 
   p.server()->close();
 
-  PERSIST_ASSERT(fut = p.client()->service("serviceTest"), fut.hasError(), std::chrono::milliseconds{1000});
+  PERSIST_ASSERT(fut = p.client()->service("serviceTest").value(), fut.hasError(), std::chrono::milliseconds{1000});
 
   qi::Future<void> f = ses->connect(p.client()->url().str());
   f.wait(8000);
@@ -168,7 +168,7 @@ TEST(QiService, RemoteObjectCacheABANewServer)
   //new service should not have a previoulsy registered ID
   EXPECT_NE(idx2, idx);
 
-  fut = p.client()->service("serviceTest");
+  fut = p.client()->service("serviceTest").value();
   EXPECT_FALSE(fut.hasError());
 
   qi::Future<std::string> fret = fut.value().async<std::string>("reply", "titi");
@@ -191,7 +191,7 @@ TEST(QiService, RemoteObjectNackTransactionWhenServerClosed)
 
   p.server()->registerService("serviceTest", obj);
   qi::Future<qi::AnyObject> fut;
-  fut = p.client()->service("serviceTest");
+  fut = p.client()->service("serviceTest").value();
   EXPECT_FALSE(fut.hasError());
 
   qi::Future<void> fret = fut.value().async<void>("sleep", qi::Seconds{2});

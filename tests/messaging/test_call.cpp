@@ -1298,7 +1298,7 @@ TEST(TestObjectT, Complete)
   qi::Object<TestClass> o = qi::Object<TestClass>(new TestClass());
   p.server()->registerService("s", o);
   // Server! This is expected to fail on client in sd mode, TestClass is no proxy
-  qi::Object<TestClass> olocal = p.server()->service("s");
+  qi::Object<TestClass> olocal = p.server()->service("s").value();
   ASSERT_TRUE(!!olocal);
   EXPECT_EQ(12, olocal->ping(12).value());
   EXPECT_EQ(12, (*olocal).ping(12).value());
@@ -1306,7 +1306,7 @@ TEST(TestObjectT, Complete)
   EXPECT_EQ(12, olocal.call<int>("ping", 12));
   // Object<T> way, does not require proxy registration actually
 
-  qi::Object<TestClassInterface> oproxy = p.client()->service("s");
+  qi::Object<TestClassInterface> oproxy = p.client()->service("s").value();
   // Look! It's the same code as above!
   EXPECT_EQ(12, oproxy->ping(12).value());
   EXPECT_EQ(12, (*oproxy).ping(12).value());

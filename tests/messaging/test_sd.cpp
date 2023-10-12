@@ -208,7 +208,7 @@ TEST(ServiceDirectory, MirrorServicesBetweenProcesses)
     }
   }
   secondaryClient->waitForService("Service").value(2000);
-  auto service = secondaryClient->service("Service").value(2000);
+  auto service = secondaryClient->service("Service").value().value(2000);
   ASSERT_EQ(Serv::response, service.call<int>("f"));
 }
 

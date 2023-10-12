@@ -100,11 +100,11 @@ protected:
         serviceWaitDefaultTimeout));
 
     qi::Future<qi::AnyObject> fut;
-    fut = p2.client()->service("coin1");
+    fut = p2.client()->service("coin1").value();
     ASSERT_FALSE(fut.hasError());
     oclient1 = fut.value();
 
-    fut = p1.client()->service("coin2");
+    fut = p1.client()->service("coin2").value();
     ASSERT_FALSE(fut.hasError());
     oclient2 = fut.value();
 

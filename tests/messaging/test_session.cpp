@@ -505,7 +505,7 @@ TEST(TestSession, AsyncConnect)
   auto client = qi::makeSession();
   ASSERT_TRUE(finishesWithValue(client->connect(test::url(*server))));
   ASSERT_TRUE(client->isConnected());
-  ASSERT_TRUE(finishesWithError(client->service("IDontWantToSegfaultHere")));
+  ASSERT_TRUE(finishesWithError(client->service("IDontWantToSegfaultHere").value()));
 }
 
 TEST(TestSession, UrlOnClosed)

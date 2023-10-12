@@ -82,7 +82,7 @@ TEST(SendObject, unregister_obj)
   test_service(o);
 
   s->unregisterService(index).wait();
-  ASSERT_ANY_THROW(s->service("test"));
+  ASSERT_ANY_THROW(s->service("test").value());
 
   s->close();
 }
