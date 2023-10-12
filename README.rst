@@ -69,7 +69,7 @@ documentation for further details.
     session->registerService("MyService", boost::make_shared<MyService>());
 
     // get our service through the middleware
-    qi::AnyObject obj = session->service("MyService");
+    qi::AnyObject obj = session->service("MyService").value();
 
     // call myFunction
     obj.call<void>("myFunction", 42);

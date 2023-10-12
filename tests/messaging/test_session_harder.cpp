@@ -141,7 +141,7 @@ TEST(TestSession, RegisterUnregisterTwoSession)
   TestSessionPair p;
   repeatedlyCallServiceMaybeDying(p, a, unitTimeout, [&]
   {
-    qi::Future<qi::AnyObject> fut = p.client()->service("TestToto");
+    qi::Future<qi::AnyObject> fut = p.client()->service("TestToto").value();
 
     ASSERT_PROPAGATE_FAILURE(fut.waitFor(callTimeout) != qi::FutureState_Running);
 
@@ -162,7 +162,7 @@ TEST(TestSession, RegisterUnregisterSameSession)
   TestSessionPair p;
   repeatedlyCallServiceMaybeDying(p, a, unitTimeout, [&]
   {
-    qi::Future<qi::AnyObject> fut = p.server()->service("TestToto");
+    qi::Future<qi::AnyObject> fut = p.server()->service("TestToto").value();
 
     ASSERT_PROPAGATE_FAILURE(fut.waitFor(callTimeout) != qi::FutureState_Running);
 
@@ -187,7 +187,7 @@ TEST(TestSession, RegisterUnregisterTwoSessionStruct)
   TestSessionPair p;
   repeatedlyCallServiceMaybeDying(p, a, unitTimeout, [&]
   {
-    qi::Future<qi::AnyObject> fut = p.client()->service("TestToto");
+    qi::Future<qi::AnyObject> fut = p.client()->service("TestToto").value();
 
     ASSERT_PROPAGATE_FAILURE(fut.waitFor(callTimeout) != qi::FutureState_Running);
 
@@ -228,7 +228,7 @@ TEST(TestSession, RegisterUnregisterSameSessionStruct)
   TestSessionPair p;
   repeatedlyCallServiceMaybeDying(p, a, unitTimeout, [&]
   {
-    qi::Future<qi::AnyObject> fut = p.server()->service("TestToto");
+    qi::Future<qi::AnyObject> fut = p.server()->service("TestToto").value();
     if (fut.hasError())
     {
       std::cout << "Call error:" << fut.error() << std::endl;

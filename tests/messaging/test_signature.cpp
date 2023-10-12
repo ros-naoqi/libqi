@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
   // We just check that the code below does not crash
   for(int i = 0 ; i < 100; i++)
   {
-    qi::AnyObject obj = p.server()->service("serviceTest");
+    qi::AnyObject obj = p.server()->service("serviceTest").value();
     finalSig = MyGenerator.signature(); //generate a signature
     std::cout << "Test with Generated signature:" << finalSig << std::endl;
 

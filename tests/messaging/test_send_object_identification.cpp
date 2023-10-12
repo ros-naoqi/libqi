@@ -498,7 +498,7 @@ TYPED_TEST(SomeInterfaceFactoryType, IdentityIsMaintainedWhenSentToInterfaceSpec
 
   auto original = makeObject<Object<SomeInterface>, SomeInterfaceImpl>(this->factory, sessions.server());
   sessions.server()->registerService("Store", boost::make_shared<SomeStoreImpl>());
-  Object<SomeStore> store = sessions.client()->service("Store");
+  Object<SomeStore> store = sessions.client()->service("Store").value();
   store->set(original);
 
   Object<SomeInterface> objectA = store->get();

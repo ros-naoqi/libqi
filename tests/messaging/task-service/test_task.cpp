@@ -40,7 +40,7 @@ protected:
   void SetUp()
   {
     p.server()->registerService("taskGen", taskGenService);
-    taskGenClient = p.client()->service("taskGen");
+    taskGenClient = p.client()->service("taskGen").value();
     ASSERT_TRUE(taskGenClient);
     taskGenProxy = qi::Object<TaskGenerator>(taskGenClient);
   }
@@ -173,7 +173,7 @@ TEST_F(TestTask, ManyManyTasks)
     Context c;
     c.session = new qi::Session();
     c.session->connect(p.serviceDirectoryEndpoints()[0]);
-    c.taskGenClient = c.session->service("taskGen");
+    c.taskGenClient = c.session->service("taskGen").value();
     c.taskGenProxy = qi::Object<TaskGenerator>(taskGenClient);
     clients.push_back(c);
   }
