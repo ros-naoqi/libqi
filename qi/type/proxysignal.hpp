@@ -7,7 +7,7 @@
 #ifndef _QI_TYPE_PROXYSIGNAL_HPP_
 #define _QI_TYPE_PROXYSIGNAL_HPP_
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <qi/signal.hpp>
 #include <qi/anyfunction.hpp>
 #include <qi/anyobject.hpp>

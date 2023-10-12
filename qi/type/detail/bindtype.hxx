@@ -16,7 +16,7 @@
 #include <boost/function_types/parameter_types.hpp>
 #include <boost/function_types/function_type.hpp>
 #include <boost/function_types/function_pointer.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/any.hpp>
 
 namespace qi

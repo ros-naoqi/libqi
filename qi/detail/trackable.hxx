@@ -10,7 +10,7 @@
 
 #include <type_traits>
 #include <boost/function.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/function_types/result_type.hpp>
 
