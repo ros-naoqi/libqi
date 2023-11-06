@@ -2,8 +2,8 @@
 Changelog for package naoqi_libqi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.0 (2023-11-06)
+------------------
 * Update README
 * Avoid boost bind global placeholders
   Finally, at last.
