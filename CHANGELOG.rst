@@ -2,8 +2,8 @@
 Changelog for package naoqi_libqi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.0 (2023-11-07)
+------------------
 * Add `iron` workflow for CI
 * Restore GitHub workflows
 * Contributors: Victor Paléologue
