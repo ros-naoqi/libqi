@@ -16,7 +16,6 @@
 #include <qi/type/objecttypebuilder.hpp>
 #include <qi/type/dynamicobjectbuilder.hpp>
 #include <future>
-#include <thread>
 
 qiLogCategory("test");
 

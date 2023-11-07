@@ -3,8 +3,7 @@
 **  See COPYING for the license
 */
 
-#include <mutex>
-
+#include <boost/thread/mutex.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/core/typeinfo.hpp>
 
@@ -92,21 +91,24 @@ namespace qi {
   using TypeFactory = std::map<TypeInfo, TypeInterface*>;
   static TypeFactory& typeFactory()
   {
-    static TypeFactory res;
-    return res;
+    static TypeFactory* res = nullptr;
+    QI_THREADSAFE_NEW(res);
+    return *res;
   }
 
   using FallbackTypeFactory = std::map<std::string, TypeInterface*>;
   static FallbackTypeFactory& fallbackTypeFactory()
   {
-    static FallbackTypeFactory res;
-    return res;
+    static FallbackTypeFactory* res = nullptr;
+    QI_THREADSAFE_NEW(res);
+    return *res;
   }
 
   QI_API TypeInterface* getType(const TypeIndex& typeId)
   {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> sl(mutex);
+    static boost::mutex* mutex = nullptr;
+    QI_THREADSAFE_NEW(mutex);
+    boost::mutex::scoped_lock sl(*mutex);
     static bool fallback = !qi::os::getenv("QI_TYPE_RTTI_FALLBACK").empty();
 
     // We create-if-not-exist on purpose: to detect access that occur before
@@ -750,8 +752,9 @@ namespace qi {
   // We want exactly one instance per element type
   static TypeInterface* makeListIteratorType(TypeInterface* element)
   {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> lock(mutex);
+    static boost::mutex* mutex;
+    QI_THREADSAFE_NEW(mutex);
+    boost::mutex::scoped_lock lock(*mutex);
     static std::map<TypeInfo, TypeInterface*>* map = nullptr;
     if (!map)
       map = new std::map<TypeInfo, TypeInterface*>();
@@ -872,8 +875,9 @@ namespace qi {
 
   TypeInterface* makeVarArgsType(TypeInterface* element)
   {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> lock(mutex);
+    static boost::mutex* mutex = nullptr;
+    QI_THREADSAFE_NEW(mutex);
+    boost::mutex::scoped_lock lock(*mutex);
     static std::map<TypeInfo, TypeInterface*>* map = nullptr;
     if (!map)
       map = new std::map<TypeInfo, TypeInterface*>();
@@ -893,8 +897,9 @@ namespace qi {
     // We want exactly one instance per element type
   TypeInterface* makeListType(TypeInterface* element)
   {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> lock(mutex);
+    static boost::mutex* mutex = nullptr;
+    QI_THREADSAFE_NEW(mutex);
+    boost::mutex::scoped_lock lock(*mutex);
     static std::map<TypeInfo, TypeInterface*>* map = nullptr;
     if (!map)
       map = new std::map<TypeInfo, TypeInterface*>();
@@ -1113,8 +1118,9 @@ namespace qi {
   static TypeInterface* makeMapIteratorType(TypeInterface* te)
   {
     using Map = std::map<TypeInfo, TypeInterface*>;
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> lock(mutex);
+    static boost::mutex* mutex = nullptr;
+    QI_THREADSAFE_NEW(mutex);
+    boost::mutex::scoped_lock lock(*mutex);
 
     static Map * map = nullptr;
     if (!map)
@@ -1286,8 +1292,9 @@ namespace qi {
   // We want exactly one instance per element type
   TypeInterface* makeMapType(TypeInterface* kt, TypeInterface* et)
   {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> lock(mutex);
+    static boost::mutex* mutex = nullptr;
+    QI_THREADSAFE_NEW(mutex);
+    boost::mutex::scoped_lock lock(*mutex);
 
     using Map = std::map<std::pair<TypeInfo, TypeInfo>, MapTypeInterface*>;
     static Map * map = nullptr;
@@ -1407,8 +1414,8 @@ namespace qi {
 
   TypeInterface* makeOptionalType(TypeInterface* value)
   {
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> lock(mutex);
+    static boost::mutex mutex;
+    boost::mutex::scoped_lock lock(mutex);
     static std::map<TypeInfo, TypeInterface*> map;
 
     const auto typeInfo = value->info();
@@ -1469,8 +1476,9 @@ namespace qi {
   TypeInterface* makeTupleType(const std::vector<TypeInterface*>& types, const std::string &name, const std::vector<std::string>& elementNames)
   {
     using Map = std::map<InfosKey, StructTypeInterface*>;
-    static std::mutex mutex;
-    std::lock_guard<std::mutex> lock(mutex);
+    static boost::mutex* mutex;
+    QI_THREADSAFE_NEW(mutex);
+    boost::mutex::scoped_lock lock(*mutex);
     static Map* map = nullptr;
     if (!map)
       map = new Map;
@@ -1516,10 +1524,11 @@ namespace qi {
       */
       std::ostringstream ss;
       ss << "Cannot do '" << operation << "' on " << typeName;
-      static std::set<std::string> once;
-      if (once.find(typeName)==once.end())
+      static std::set<std::string>* once = nullptr;
+      QI_THREADSAFE_NEW(once);
+      if (once->find(typeName)==once->end())
       {
-        once.insert(typeName);
+        once->insert(typeName);
         qiLogError() << ss.str();
       }
       throw std::runtime_error(ss.str());
@@ -1548,10 +1557,11 @@ namespace qi {
       return true;
     }
   }
-  static std::mutex& registerStructMutex()
+  static boost::mutex& registerStructMutex()
   {
-    static std::mutex mutex;
-    return mutex;
+    static boost::mutex* m = nullptr;
+    QI_THREADSAFE_NEW(m);
+    return *m;
   }
   using RegisterStructMap = std::map<std::string, TypeInterface*>;
   static RegisterStructMap& registerStructMap()
@@ -1566,13 +1576,13 @@ namespace qi {
     // leave this outside the lock!
     std::string k = type->signature().toString();
     qiLogDebug() << "Registering struct for " << k <<" " << type->infoString();
-    std::lock_guard<std::mutex> lock(registerStructMutex());
+    boost::mutex::scoped_lock lock(registerStructMutex());
     registerStructMap()[k] = type;
   }
   /// @Return matchin TypeInterface registered by registerStruct() or 0.
   TypeInterface* getRegisteredStruct(const qi::Signature& s)
   {
-    std::lock_guard<std::mutex> lock(registerStructMutex());
+    boost::mutex::scoped_lock lock(registerStructMutex());
     RegisterStructMap& map = registerStructMap();
     RegisterStructMap::iterator it = map.find(s.toString());
     if (it == map.end())

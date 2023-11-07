@@ -7,13 +7,12 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/cxx11/all_of.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/thread/synchronized_value.hpp>
 
 #ifdef _WIN32
   #include <Windows.h>
 #endif
 
-qiLogCategory("qitype.module");
+qiLogCategory("qitype.package");
 
 namespace qi
 {
@@ -24,7 +23,10 @@ namespace qi
   using moduleFactoryPluginFn = void(*)(void);
 
   using AnyModuleMap = std::map<std::string, AnyModule>;
-  static boost::synchronized_value<AnyModuleMap, boost::mutex> registeredModules;
+
+  static boost::recursive_mutex* gMutexPkg      = NULL;
+  static boost::recursive_mutex* gMutexLoading  = NULL;
+  static AnyModuleMap*           gReadyPackages = NULL;
 
   /// Language -> Factory Function
   using ModuleFactoryMap = std::map<std::string, ModuleFactoryFunctor>;
@@ -63,9 +65,20 @@ namespace qi
     }
   }
 
-  // Converts `.` to `/`.
-  static std::string moduleNameToPath(const std::string& moduleName) {
-    return boost::algorithm::replace_all_copy(moduleName, ".", "/");
+  static void initModuleFactory()
+  {
+    if (!gMutexPkg)
+    {
+      gMutexPkg = new boost::recursive_mutex;
+      gMutexLoading = new boost::recursive_mutex;
+      gReadyPackages = new AnyModuleMap;
+      loadModuleFactoryPlugins();
+    }
+  }
+
+  //convert . to /
+  static std::string pkgToPath(const std::string& pkgName) {
+    return boost::algorithm::replace_all_copy(pkgName, ".", "/");
   }
 
   static bool isValid(char c) {
@@ -80,18 +93,17 @@ namespace qi
     return false;
   }
 
-  static void checkModule(const std::string& moduleName) {
-    if (moduleName.empty() || !boost::algorithm::all_of(moduleName, &isValid))
-      throw std::runtime_error("Invalid module name: '" + moduleName + "', use only character from [_.a-zA-Z0-9]");
+  static void checkPkg(const std::string& pkgName) {
+    if (pkgName.empty() || !boost::algorithm::all_of(pkgName, &isValid))
+      throw std::runtime_error("Invalid package name: '" + pkgName + "', use only character from [_.a-zA-Z0-9]");
   }
 
   static void registerModuleInFactory(const AnyModule& module) {
-    loadModuleFactoryPlugins();
-    auto modules = registeredModules.synchronize();
-    if (modules->find(module.moduleName()) != modules->end())
+    initModuleFactory();
+    if (gReadyPackages->find(module.moduleName()) != gReadyPackages->end())
       throw std::runtime_error("module already registered: " + module.moduleName());
     qiLogVerbose() << "Registering module " << module.moduleName();
-    (*modules)[module.moduleName()] = module;
+    (*gReadyPackages)[module.moduleName()] = module;
   }
 
   //return value is pointless... just for MACRO. see QI_REGISTER_MODULE
@@ -130,19 +142,22 @@ namespace qi
   }
 
   static AnyModule findModuleInFactory(const std::string& name) {
-    checkModule(name);
-    auto modules = registeredModules.synchronize();
-    auto it = modules->find(name);
-    if (it != modules->end())
+    checkPkg(name);
+    boost::recursive_mutex::scoped_lock sl(*gMutexLoading);
     {
-      qiLogDebug() << "Module " << name << " already loaded.";
-      return it->second;
+      boost::recursive_mutex::scoped_lock sl(*gMutexPkg);
+      AnyModuleMap::iterator it = gReadyPackages->find(name);
+      if (it != gReadyPackages->end())
+      {
+        qiLogDebug() << "Library " << name << " already loaded.";
+        return (*gReadyPackages)[name];
+      }
     }
     return AnyModule();
   }
 
   AnyModule import(const std::string& name) {
-    loadModuleFactoryPlugins();
+    initModuleFactory();
 
     AnyModule mod = findModuleInFactory(name);
     if (mod)
@@ -158,7 +173,7 @@ namespace qi
   }
 
   AnyModule import(const ModuleInfo& mi) {
-    loadModuleFactoryPlugins();
+    initModuleFactory();
 
     AnyModule mod = findModuleInFactory(mi.name);
     if (mod)
@@ -190,8 +205,8 @@ namespace qi
   static AnyModule loadCppModule(const ModuleInfo& moduleInfo) {
     if (moduleInfo.type != "cpp")
       throw std::runtime_error("Bad module type '" + moduleInfo.type + "' for module '" + moduleInfo.name);
-    std::string path = moduleNameToPath(moduleInfo.name);
-    void *mod = Application::loadModule(path);
+    std::string pkgPath = pkgToPath(moduleInfo.name);
+    void *mod = Application::loadModule(pkgPath);
 
     moduleInitFn fn = (moduleInitFn)qi::os::dlsym(mod, "qi_module_init");
     if (!fn)
@@ -199,7 +214,7 @@ namespace qi
 
     ModuleBuilder mb(moduleInfo);
 
-    mb.setModulePath(qi::path::findLib(path));
+    mb.setModulePath(qi::path::findLib(pkgPath));
     fn(&mb);
     registerModuleInFactory(mb.module());
     return mb.module();

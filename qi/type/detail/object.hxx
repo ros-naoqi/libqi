@@ -349,7 +349,7 @@ private:
   static void deleteObject(GenericObject* obj)
   {
     qiLogDebug("qi.object") << "deleteObject " << obj << " "
-      << obj->value << " " << obj->metaObject().description();
+      << obj->value << " " << obj->type->infoString();
     obj->type->destroy(obj->value);
     delete obj;
   }

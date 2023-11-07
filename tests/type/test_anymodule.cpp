@@ -12,33 +12,33 @@
 ///
 /// \brief TEST
 /// The dynamic library used for these tests is compiled from
-/// qi_test_anymodule.cpp
+/// test_packages_anymodule.cpp
 ///
 
-TEST(TestModule, TestFreeFunctions)
+TEST(TestPackage, TestFreeFunctions)
 {
-    qi::AnyModule module = ::qi::import("qi_test_anymodule");
-    ASSERT_TRUE(module);
+    qi::AnyModule pkg = ::qi::import("qi_test_anymodule");
+    ASSERT_TRUE(pkg);
 
     int r;
 
-    module.call<void>("my_void_function", r);
+    pkg.call<void>("my_void_function", r);
     ASSERT_EQ(r, 44);
-    r = module.call<int>("my_scl_func");
+    r = pkg.call<int>("my_scl_func");
     ASSERT_EQ(r, 45);
 
-    qi::AnyObject c = module.call<qi::AnyObject>("my_cat_returner");
+    qi::AnyObject c = pkg.call<qi::AnyObject>("my_cat_returner");
 
     ASSERT_EQ(c.call<int>("meow"), 15);
 }
 
-TEST(TestModule, FactoryCreatesFunctionalObject)
+TEST(TestPackage, FactoryCreatesFunctionalObject)
 {
-    qi::AnyModule module = ::qi::import("qi_test_anymodule");
+    qi::AnyModule pkg = ::qi::import("qi_test_anymodule");
 
-    ASSERT_TRUE(module);
+    ASSERT_TRUE(pkg);
 
-    qi::AnyObject obj = module.call<qi::AnyObject>("Cat");
+    qi::AnyObject obj = pkg.call<qi::AnyObject>("Cat");
     obj.setProperty("meowVolume", ::qi::AnyValue::from(42));
     int result = obj.call<int>("meow");
 

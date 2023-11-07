@@ -335,17 +335,6 @@ TEST(QiOs, getpid)
 #endif
 }
 
-TEST(QiOs, Home)
-{
-#ifdef ANDROID
-  // Home always fails on Android as it is not accessible.
-  EXPECT_THROW(qi::os::home(), std::runtime_error);
-#else
-  // On any other platform, this should not throw.
-  EXPECT_NO_THROW(qi::os::home());
-#endif
-}
-
 TEST(QiOs, tmp)
 {
   std::string temp = qi::os::tmp();
@@ -458,12 +447,8 @@ TEST(QiOs, tmpdir_prefix_zero)
 
 TEST(QiOs, get_host_name)
 {
-#ifdef ANDROID
-  EXPECT_THROW(qi::os::gethostname(), std::runtime_error);
-#else
   std::string temp = qi::os::gethostname();
   EXPECT_NE(std::string(), temp);
-#endif
 }
 
 bool freeportbind(unsigned short port, int &sock)
@@ -613,25 +598,7 @@ TEST(QiOs, sequentialHostIPAddrs)
   }
 }
 
-TEST(QiOs, MachineIdIsAlwaysTheSame)
-{
-  EXPECT_EQ(qi::os::getMachineId(), qi::os::getMachineId());
-}
-
-TEST(QiOs, MachineIdIsNotEmpty)
-{
-  EXPECT_FALSE(qi::os::getMachineId().empty());
-}
-
-TEST(QiOs, MachineIdIsNotNull)
-{
-  EXPECT_NE("00000000-0000-0000-0000-000000000000", qi::os::getMachineId());
-}
-
-// On Android, we cannot ensure that a machine-id will be shared among
-// different processes, so this test is disabled for this platform.
-#ifndef ANDROID
-TEST(QiOs, MachineIdIsSharedBetweenProcesses)
+TEST(QiOs, getMachineId)
 {
   int status = 0;
   std::string bin = qi::path::findBin("check_machineid");
@@ -656,7 +623,6 @@ TEST(QiOs, MachineIdIsSharedBetweenProcesses)
 
   ASSERT_TRUE(uuid1.compare(uuid2) == 0);
 }
-#endif
 
 TEST(QiOs, getMachineIdAsUuid)
 {
