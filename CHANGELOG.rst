@@ -2,6 +2,11 @@
 Changelog for package naoqi_libqi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Rename license file
+* Contributors: Victor Paléologue
+
 3.0.0 (2023-11-07)
 ------------------
 * Add `iron` workflow for CI
@@ -14,3 +19,4 @@ Changelog for package naoqi_libqi
 * Fix usage of `boost::asio` for 1.74
 * Use explicit placeholders
 * Port to ROS 2 restarted from version qi-framework-v1.8.7
+* Contributors: Victor Paléologue
