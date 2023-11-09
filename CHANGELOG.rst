@@ -2,8 +2,8 @@
 Changelog for package naoqi_libqi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.1 (2023-11-09)
+------------------
 * Rename license file
 * Contributors: Victor Paléologue
 
