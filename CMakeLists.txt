@@ -450,7 +450,9 @@ install(TARGETS qi DESTINATION lib)
 install(FILES package.xml DESTINATION share/${PROJECT_NAME})
 
 enable_testing()
-add_subdirectory("tests")
+if(BUILD_TESTING)
+  add_subdirectory("tests")
+endif()
 
 ament_export_include_directories(include)
 ament_export_libraries(qi)
