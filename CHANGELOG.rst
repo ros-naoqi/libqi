@@ -2,8 +2,8 @@
 Changelog for package naoqi_libqi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.2 (2023-11-13)
+------------------
 * ROS-compatible automated test
 * Contributors: Victor Paléologue
 
