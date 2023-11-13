@@ -3,7 +3,7 @@
 #include <ka/empty.hpp>
 #include <boost/range/size.hpp>
 #include <boost/range/adaptor/transformed.hpp>
-#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace ka;
 using namespace ka::parse;

@@ -9,8 +9,9 @@ add_library(
   "qi/testutils/mockutils.hpp"
 )
 
-find_package(GTest REQUIRED)
-target_link_libraries(qitestutils qi GTest::GTest)
+find_package(ament_cmake_gtest REQUIRED)
+target_include_directories(qitestutils PUBLIC GTEST_INCLUDE_DIRS)
+target_link_libraries(qitestutils PUBLIC qi GTEST_LIBRARIES)
 
 add_subdirectory("ka")
 # add_subdirectory("qi")
