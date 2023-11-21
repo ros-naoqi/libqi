@@ -92,3 +92,8 @@ Upstream Maintainers:
 - Vincent Palancher <vincent.palancher@external.softbankrobotics.com>
 
 See the [`package.xml`](package.xml) for the ROS 2 maintainers.
+
+ROS Distro| Binary Status | Source Status | Github Build |
+|-------------------|-------------------|-------------------|-------------------|
+Humble | [![ros2-humble-jammy-bin-status-badge](https://build.ros2.org/job/Hbin_uJ64__naoqi_libqi__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Hbin_uJ64__naoqi_libqi__ubuntu_jammy_amd64__binary) | [![ros2-humble-jammy-src-status-badge](https://build.ros2.org/job/Hsrc_uJ__naoqi_libqi__ubuntu_jammy__source/badge/icon)](https://build.ros2.org/job/Hsrc_uJ__naoqi_libqi__ubuntu_jammy__source) | [![ros2-humble-jammy](https://github.com/ros-naoqi/libqi/actions/workflows/humble_jammy.yml/badge.svg?branch=ros2)](https://github.com/ros-naoqi/libqi/actions/workflows/humble_jammy.yml)
+Iron | [![ros2-iron-jammy-bin-status-badge](https://build.ros2.org/job/Ibin_uJ64__naoqi_libqi__ubuntu_jammy_amd64__binary/badge/icon)](https://build.ros2.org/job/Ibin_uJ64__naoqi_libqi__ubuntu_jammy_amd64__binary) | [![ros2-iron-jammy-src-status-badge](https://build.ros2.org/job/Isrc_uJ__naoqi_libqi__ubuntu_jammy__source/badge/icon)](https://build.ros2.org/job/Isrc_uJ__naoqi_libqi__ubuntu_jammy__source) | [![ros2-iron-jammy](https://github.com/ros-naoqi/libqi/actions/workflows/iron_jammy.yml/badge.svg?branch=ros2)](https://github.com/ros-naoqi/libqi/actions/workflows/iron_jammy.yml)
