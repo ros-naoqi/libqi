@@ -1,6 +1,7 @@
 #ifndef KA_URI_URI_FWD_HPP
 #define KA_URI_URI_FWD_HPP
 #pragma once
+#include <cstdint>
 
 #include "../macroregular.hpp"
 #include "../opt.hpp"
