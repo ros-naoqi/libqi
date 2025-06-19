@@ -30,7 +30,7 @@ jobs:
       - name: Check out libqi repo
         uses: actions/checkout@v2
       - name: Fetch/store directory used by ccache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ccache-${{ inputs.ROS_DISTRO }}-${{ inputs.ROS_REPO }}-${{github.run_id}}
