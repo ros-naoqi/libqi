@@ -2,8 +2,8 @@
 Changelog for package naoqi_libqi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.3 (2025-06-19)
+------------------
 * Update c++ to 14 for gtest compatability
 * Support for Jazzy
 * Update badges
