@@ -3,6 +3,7 @@
 **  See COPYING for the license
 */
 #include <thread>
+#include "boostasiocompat.hpp"
 #include <system_error>
 #include <memory>
 
@@ -311,7 +312,7 @@ namespace qi {
     }
 
     _io.reset();
-    delete _work.exchange(new boost::asio::io_service::work(_io));
+    delete _work.exchange(qi::newAsioWork(_io));
 
     auto min = _minThreads.load();
     auto max = _maxThreads.load();

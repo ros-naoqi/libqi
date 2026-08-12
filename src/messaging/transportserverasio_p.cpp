@@ -3,6 +3,7 @@
 **  See COPYING for the license
 */
 #include <string>
+#include "../boostasiocompat.hpp"
 #include <cstring>
 #include <cstdlib>
 #include <queue>
@@ -46,7 +47,7 @@ namespace qi
 
     if (context)
     {
-      _acceptor = new boost::asio::ip::tcp::acceptor(*(boost::asio::io_service*)context->nativeHandle());
+      _acceptor = new boost::asio::ip::tcp::acceptor(*(qi::AsioIoService*)context->nativeHandle());
       listen(_listenUrl);
     }
     else
