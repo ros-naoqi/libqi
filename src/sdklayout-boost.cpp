@@ -579,7 +579,7 @@ namespace detail {
       {
         boost::system::error_code ec;
         boost::filesystem::recursive_directory_iterator itD(dataPath,
-            boost::filesystem::symlink_option::none, ec);
+            boost::filesystem::directory_options::none, ec);
         if (ec)
         {
           if (ec == boost::system::errc::no_such_file_or_directory)
