@@ -16,10 +16,15 @@
 
 namespace qi
 {
-  template<size_t N>
-  static void staticAssertUuidIsByteArray(uint8_t (Uuid::*)[N])
+  // boost::uuids::uuid::data was a raw `uint8_t[16]` until Boost 1.86, which
+  // wrapped it in a `data_type` struct (still 16 contiguous bytes, with array-like
+  // conversions/iterators). Take the member by a generic pointer-to-member and
+  // assert on sizeof so the check holds across Boost versions (uuid::data occupies
+  // the whole Uuid, i.e. Uuid is a byte array) instead of hard-coding uint8_t[N].
+  template<class D>
+  static void staticAssertUuidIsByteArray(D Uuid::*)
   {
-    static_assert(sizeof(Uuid) == N, "Uuid must be a byte array.");
+    static_assert(sizeof(Uuid) == sizeof(D), "Uuid must be a byte array.");
   }
 
   PtrUid::PtrUid(const Uuid& machineUuid, const Uuid& processUuid, const void* ptr)
