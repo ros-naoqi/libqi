@@ -1,6 +1,7 @@
 #pragma once
 #ifndef _QI_SOCK_TRAITS_HPP
 #define _QI_SOCK_TRAITS_HPP
+#include <boost/version.hpp>
 #include <ka/typetraits.hpp>
 #include "concept.hpp"
 
@@ -40,11 +41,21 @@ namespace qi { namespace sock {
   template<typename R>
   using Query = typename R::query;
 
+  // Boost 1.87 removed resolver::iterator; its result is now the
+  // basic_resolver_results range (whose iterator is self-owning).
+#if BOOST_VERSION >= 108700
+  template<typename R>
+  using Iterator = typename R::results_type::iterator;
+
+  template<typename R>
+  using Entry = typename R::results_type::value_type;
+#else
   template<typename R>
   using Iterator = typename R::iterator;
 
   template<typename R>
   using Entry = typename R::iterator::value_type;
+#endif
 
   // NetQuery-related traits
   template<typename Q>

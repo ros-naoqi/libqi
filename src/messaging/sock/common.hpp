@@ -2,8 +2,10 @@
 #ifndef _QI_SOCK_COMMON_HPP
 #define _QI_SOCK_COMMON_HPP
 #include <mutex>
+#include <boost/version.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/optional.hpp>
+#include <boost/asio/bind_executor.hpp>
 #include <ka/functional.hpp>
 #include <ka/typetraits.hpp>
 #include <ka/macroregular.hpp>
@@ -46,10 +48,19 @@ namespace qi { namespace sock {
   // PolymorphicTransformation:
     /// Procedure<void (Args...)> Proc
     template<typename Proc>
+  // Boost 1.87 removed io_context::wrap; bind_executor associates the executor
+  // with the handler equivalently.
+#if BOOST_VERSION >= 108700
+    auto operator()(Proc&& p) -> decltype(boost::asio::bind_executor(_io->get_executor(), std::forward<Proc>(p)))
+    {
+      return boost::asio::bind_executor(_io->get_executor(), std::forward<Proc>(p));
+    }
+#else
     auto operator()(Proc&& p) -> decltype(_io->wrap(std::forward<Proc>(p)))
     {
       return _io->wrap(std::forward<Proc>(p));
     }
+#endif
   };
 
   /// Gracefully closes the socket.

@@ -2,6 +2,7 @@
 #ifndef _QI_SOCK_RESOLVE_HPP
 #define _QI_SOCK_RESOLVE_HPP
 #include <string>
+#include <boost/version.hpp>
 #include <ka/typetraits.hpp>
 #include <ka/src.hpp>
 #include <ka/functional.hpp>
@@ -76,12 +77,24 @@ namespace qi { namespace sock {
         return;
       }
       qiLogVerbose(logCategory()) << "(ResolverUrlList)" << this << ": Trying to connect to " << url.host() << ":" << url.port();
+      // Boost 1.87 removed resolver::query and the iterator-based async_resolve.
+      // The range-based overload returns basic_resolver_results; adapt it back to
+      // the (error_code, Iterator) callback via results.begin() (a self-owning
+      // iterator, so it stays valid after the results object is destroyed).
+#if BOOST_VERSION >= 108700
+      _resolver.async_resolve(url.host(), os::to_string(url.port()),
+        [onComplete](const ErrorCode<N>& e,
+                     const typename Resolver<N>::results_type& results) mutable {
+          onComplete(e, results.begin());
+        });
+#else
       Query<Resolver<N>> query(url.host(), os::to_string(url.port())
 #if !BOOST_OS_ANDROID
         , Query<Resolver<N>>::all_matching
 #endif
       );
       _resolver.async_resolve(query, onComplete);
+#endif
       setupStop(_resolver);
     }
   };

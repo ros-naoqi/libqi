@@ -2,6 +2,8 @@
 #ifndef _QI_SOCK_DISCONNECTINGSTATE_HPP
 #define _QI_SOCK_DISCONNECTINGSTATE_HPP
 #include <qi/future.hpp>
+#include <boost/version.hpp>
+#include <boost/asio/dispatch.hpp>
 #include "common.hpp"
 #include "macrolog.hpp"
 #include "traits.hpp"
@@ -44,11 +46,18 @@ namespace qi
           // lifetime issues).
           auto completePromise = _completePromise;
           auto socket = _socket;
-          GET_IO_SERVICE(*socket).wrap([=]() mutable {
+          auto doClose = [=]() mutable {
             QI_LOG_DEBUG_SOCKET(socket.get()) << "Disconnecting: before socket close";
             close<N>(socket);
             completePromise.setValue(nullptr);
-          })();
+          };
+          // Boost 1.87 removed io_context::wrap; `io.wrap(f)()` dispatched f on the
+          // io_service, so the direct modern equivalent is asio::dispatch(io, f).
+#if BOOST_VERSION >= 108700
+          boost::asio::dispatch(GET_IO_SERVICE(*socket), doClose);
+#else
+          GET_IO_SERVICE(*socket).wrap(doClose)();
+#endif
         }
         else
         {
