@@ -238,7 +238,7 @@ struct predicate_or_t {
   ka::product_t<Pred...> preds;
 
 // Regular:
-  KA_GENERATE_FRIEND_REGULAR_OPS_1(predicate_or_t, pred)
+  KA_GENERATE_FRIEND_REGULAR_OPS_1(predicate_or_t, preds)
 
 // Predicate<T...>:
   template<typename... T> constexpr
