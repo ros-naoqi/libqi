@@ -8,6 +8,7 @@
 #define _SRC_EVENTLOOP_P_HPP_
 
 #include <atomic>
+#include "boostasiocompat.hpp"
 #include <thread>
 #include <boost/asio.hpp>
 #include <qi/api.hpp>
@@ -108,8 +109,8 @@ namespace qi {
       qi::SteadyClockTimePoint timepoint, boost::function<void ()> callback,
       ExecutionOptions options, UpdateLastWorkDate);
 
-    boost::asio::io_service _io;
-    std::atomic<boost::asio::io_service::work*> _work; // keep io.run() alive
+    qi::AsioIoService _io;
+    std::atomic<qi::AsioWork*> _work; // keep io.run() alive
     std::atomic<int> _minThreads;
     std::atomic<int> _maxThreads;
 

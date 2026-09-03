@@ -5,6 +5,7 @@
  */
 
 #include <cstdlib>
+#include "boostasiocompat.hpp"
 #include <iostream>
 #include <numeric>
 
@@ -74,7 +75,7 @@ namespace qi {
   static FunctionList* globalAtRun = nullptr;
   static FunctionList* globalAtStop = nullptr;
 
-  static boost::optional<boost::asio::io_service> globalIoService;
+  static boost::optional<qi::AsioIoService> globalIoService;
 
   static void readPathConf()
   {
@@ -145,7 +146,11 @@ namespace qi {
     if (boostPath.is_relative() && !boostPath.has_parent_path())
     {
       environmentPaths.insert(environmentPaths.begin(), currentDirectory);
+#if BOOST_VERSION >= 108600
+      return boost::process::v1::search_path(boostPath, environmentPaths).make_preferred();
+#else
       return boost::process::search_path(boostPath, environmentPaths).make_preferred();
+#endif
     }
     return bfs::absolute(boostPath, currentDirectory).make_preferred();
   }

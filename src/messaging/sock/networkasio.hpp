@@ -2,6 +2,7 @@
 #ifndef _QI_SOCK_NETWORKASIO_HPP
 #define _QI_SOCK_NETWORKASIO_HPP
 #include <boost/asio.hpp>
+#include "../../boostasiocompat.hpp"
 #include <boost/asio/ssl.hpp>
 #include <openssl/ssl.h>
 #include <boost/predef.h>
@@ -25,7 +26,7 @@ namespace qi { namespace sock {
     using socket_option_no_delay_type = boost::asio::ip::tcp::no_delay;
     using accept_option_reuse_address_type = boost::asio::ip::tcp::acceptor::reuse_address;
     using error_code_type = boost::system::error_code;
-    using io_service_type = boost::asio::io_service;
+    using io_service_type = qi::AsioIoService;
     using io_context_type = boost::asio::io_context;
     using const_buffer_type = boost::asio::const_buffer;
     using executor_type = io_service_type::executor_type;

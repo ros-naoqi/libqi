@@ -8,6 +8,7 @@
 
 #include <boost/function.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/version.hpp>
 #include <boost/bind/bind.hpp>
 
 #include <iomanip>
@@ -97,8 +98,11 @@ namespace log
       fclose(_p->_file);
       boost::filesystem::path filePath(_p->_fileName);
       boost::filesystem::path oldFilePath(_p->_fileName + ".old");
-
+#if BOOST_VERSION >= 107400
+      boost::filesystem::copy_file(filePath, oldFilePath, boost::filesystem::copy_options::overwrite_existing);
+#else
       boost::filesystem::copy_file(filePath, oldFilePath, boost::filesystem::copy_option::overwrite_if_exists);
+#endif
 
       FILE* pfile = qi::os::fopen(filePath.make_preferred().string().c_str(), "w+");
 

@@ -3,13 +3,14 @@
 **  See COPYING for the license
 */
 #include <thread>
+#include "boostasiocompat.hpp"
 #include <system_error>
 #include <memory>
 
-#include <boost/asio/io_service.hpp>
 #include <boost/program_options.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/asio/steady_timer.hpp>
+#include <boost/asio/post.hpp>
 #include <boost/thread/synchronized_value.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/algorithm/cxx11/any_of.hpp>
@@ -310,8 +311,8 @@ namespace qi {
         std::max(static_cast<int>(std::thread::hardware_concurrency()), 3));
     }
 
-    _io.reset();
-    delete _work.exchange(new boost::asio::io_service::work(_io));
+    _io.restart();
+    delete _work.exchange(qi::newAsioWork(_io));
 
     auto min = _minThreads.load();
     auto max = _maxThreads.load();
@@ -676,7 +677,7 @@ namespace qi {
       tracepoint(qi_qi, eventloop_post, id, cb.target_type().name());
 
       auto countTotalTask = ka::shared_ptr(ka::scoped_incr_and_decr(_totalTask));
-      _io.post([=] { invoke_maybe(cb, id, Promise<void>{}, erc, countTotalTask,
+      boost::asio::post(_io, [=] { invoke_maybe(cb, id, Promise<void>{}, erc, countTotalTask,
                                   UpdateLastWorkDate{true}); });
     }
     else
@@ -726,7 +727,7 @@ namespace qi {
     if (delay > Duration::zero())
     {
       boost::shared_ptr<boost::asio::steady_timer> timer = boost::make_shared<boost::asio::steady_timer>(_io);
-      timer->expires_from_now(boost::chrono::duration_cast<boost::asio::steady_timer::duration>(delay));
+      timer->expires_after(std::chrono::nanoseconds(boost::chrono::duration_cast<boost::chrono::nanoseconds>(delay).count()));
       auto prom = detail::makeCancelingPromise(options, boost::bind(&boost::asio::steady_timer::cancel, timer));
       timer->async_wait([=](const boost::system::error_code& erc) {
         invoke_maybe(cb, id, prom, erc, countTotalTask, update);
@@ -734,7 +735,7 @@ namespace qi {
       return prom.future();
     }
     Promise<void> prom;
-    _io.post([=] { invoke_maybe(cb, id, prom, erc, countTotalTask, update); });
+    boost::asio::post(_io, [=] { invoke_maybe(cb, id, prom, erc, countTotalTask, update); });
     return prom.future();
   }
 

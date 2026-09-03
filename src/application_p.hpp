@@ -3,7 +3,13 @@
 # include <qi/api.hpp>
 # include <qi/path.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/version.hpp>
+// Boost.Process moved v1 into the boost::process::v1 namespace in 1.86.
+#if BOOST_VERSION >= 108600
+#include <boost/process/v1/search_path.hpp>
+#else
 #include <boost/process/search_path.hpp>
+#endif
 
 namespace qi
 {

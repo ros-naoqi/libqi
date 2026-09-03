@@ -18,6 +18,7 @@
 #include <boost/function_types/function_pointer.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/any.hpp>
+#include <boost/version.hpp>
 
 namespace qi
 {
@@ -190,6 +191,19 @@ namespace qi
         using type = boost::mpl::vector<>;
       };
 
+#if BOOST_VERSION >= 108700
+      // Boost 1.87 rewrote Bind with variadic templates: the fixed-arity
+      // boost::_bi::list1<P1> ... list9<...> were replaced by a single variadic
+      // boost::_bi::list<P...>. A single specialization covers every arity (and
+      // strictly more than the old 5-argument ceiling). Each P is still either a
+      // boost::_bi::value<V> or a boost::arg<I>, so the downstream ArgResolver is
+      // unchanged.
+      template<typename... P>
+      struct BilistToSeq<boost::_bi::list<P...> >
+      {
+        using type = typename boost::mpl::vector<P...>;
+      };
+#else
       template<typename P1>
       struct BilistToSeq<boost::_bi::list1<P1> >
       {
@@ -219,6 +233,7 @@ namespace qi
       {
         using type = typename boost::mpl::vector<P1, P2, P3, P4, P5>;
       };
+#endif
 
       template<typename F, typename BL>
       struct parameter_types

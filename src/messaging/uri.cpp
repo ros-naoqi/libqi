@@ -15,7 +15,7 @@ bool isLoopbackAddress(const std::string& host)
   if (host == "localhost")
     return true;
   boost::system::error_code ec;
-  const auto addr = boost::asio::ip::address::from_string(host, ec);
+  const auto addr = boost::asio::ip::make_address(host, ec);
   return !ec && addr.is_loopback();
 }
 
